@@ -32,17 +32,26 @@ class Level extends THREE.Group{
                     } else{
                         this.newTile(obj[MapTile]["set"][0],obj[MapTile]["set"][1],obj[MapTile]["set"][2],obj[MapTile]["type"], obj[MapTile]["facing"]);
                     }
+                    if(obj[MapTile]["type"] == "Start"){
+                        this.start = [obj[MapTile]["set"][0],obj[MapTile]["set"][1],obj[MapTile]["set"][2]];
+                    }
                 }
             }
         });
     }
 
-    newTile(x, y, z, type, facing){
-        if (typeof this.level[parseInt(x)] == 'undefined') {
-            this.level[parseInt(x)] = [];
+    newTile(x, y, z, type, facing = "north"){
+        x = parseInt(x);
+        y = parseInt(y);
+        z = parseInt(z);
+        if (typeof this.level[x] == 'undefined') {
+            this.level[x] = [];
         }
-        if (typeof this.level[parseInt(x)][parseInt(y)] == 'undefined') {
-            this.level[parseInt(x)][parseInt(y)] = [];
+        if (typeof this.level[x][y] == 'undefined') {
+            this.level[x][y] = [];
+        }
+        if(this.getMapTileType(x,y,z) != "Air") {
+            delete this.level[x][y][z];
         }
         let tile =  new THREE.Mesh(this.MapTiles.get("objects").get(type).get("mesh"),this.MapTiles.get("objects").get(type).get("material"));
         this.add(tile);
@@ -66,40 +75,72 @@ class Level extends THREE.Group{
                 tile.rotation.y = 0.5 * Math.PI;
                 break;
         }
-        this.level[parseInt(x)][parseInt(y)][parseInt(z)] = [tile, type, facing];
+        this.level[x][y][z] = [tile, type, facing];
 
+        if(type == "Tesseract"){
+            this.level[x][y][z].push([x,y,z]);
+        }
+    }
+
+    resetTesseracts(){
+        this.level.forEach((x, x2)=> {
+            var x2 = x2;
+            x.forEach((y, y2) => {
+                var y2 = y2;
+                y.forEach((z, z2) => {
+                    if(z[1] == "Tesseract"){
+                        console.log(x2,y2,z2);
+                        this.moveTile(x2,y2,z2,z[3][0],z[3][1],z[3][2],true);
+                    }
+                })
+            })
+        });
     }
 
     getMapTileType(x,y,z){
-        if (typeof this.level[parseInt(x)] == 'undefined') {
+        x = parseInt(x);
+        y = parseInt(y);
+        z = parseInt(z);
+        if (typeof this.level[x] == 'undefined') {
             return "Air";
-         } else if (typeof this.level[parseInt(x)][parseInt(y)] == 'undefined') {
+         } else if (typeof this.level[x][y] == 'undefined') {
             return "Air";
-         } else if (typeof this.level[parseInt(x)][parseInt(y)][parseInt(z)] == 'undefined') {
+         } else if (typeof this.level[x][y][z] == 'undefined') {
             return "Air";
-         } else return this.level[parseInt(x)][parseInt(y)][parseInt(z)][1];;
+         } else return this.level[x][y][z][1];;
     }
     getMapTileFacing(x,y,z){
-        if (typeof this.level[parseInt(x)] == 'undefined') {
+        x = parseInt(x);
+        y = parseInt(y);
+        z = parseInt(z);
+        if (typeof this.level[x] == 'undefined') {
             return "none";
-         } else if (typeof this.level[parseInt(x)][parseInt(y)] == 'undefined') {
+         } else if (typeof this.level[x][y] == 'undefined') {
             return "none";
-         } else if (typeof this.level[parseInt(x)][parseInt(y)][parseInt(z)] == 'undefined') {
+         } else if (typeof this.level[x][y][z] == 'undefined') {
             return "none";
-         } else return this.level[parseInt(x)][parseInt(y)][parseInt(z)][2];;
+         } else return this.level[x][y][z][2];;
     }
     getMapTileMesh(x,y,z){
-        if (typeof this.level[parseInt(x)] == 'undefined') {
+        x = parseInt(x);
+        y = parseInt(y);
+        z = parseInt(z);
+        if (typeof this.level[x] == 'undefined') {
             return "none";
-         } else if (typeof this.level[parseInt(x)][parseInt(y)] == 'undefined') {
+         } else if (typeof this.level[x][y] == 'undefined') {
             return "none";
-         } else if (typeof this.level[parseInt(x)][parseInt(y)][parseInt(z)] == 'undefined') {
+         } else if (typeof this.level[x][y][z] == 'undefined') {
             return "none";
-         } else return this.level[parseInt(x)][parseInt(y)][parseInt(z)][0];;
+         } else return this.level[x][y][z][0];;
     }
 
-    moveTile(x1,y1,z1,x2,y2,z2){
-        console.log(this.getMapTileType(x1,y1,z1));
+    moveTile(x1,y1,z1,x2,y2,z2, moveMesh = false){
+        x1 = parseInt(x1);
+        y1 = parseInt(y1);
+        z1 = parseInt(z1);
+        x2 = parseInt(x2);
+        y2 = parseInt(y2);
+        z2 = parseInt(z2);
         if (this.getMapTileType(x2,y2,z2) != "Air"){
             return;
         }
@@ -111,6 +152,10 @@ class Level extends THREE.Group{
         }
         this.level[x2][y2][z2] = this.level[x1][y1][z1];
         delete this.level[x1][y1][z1];
+
+        if(moveMesh){
+            this.level[x2][y2][z2][0].position.set(x2 + 0.5,y2 + 0.5,z2 + 0.5);
+        }
     }
   
 }

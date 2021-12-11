@@ -72,7 +72,6 @@ class Player extends THREE.Group {
                this.tesseract.push(position.x );
                this.tesseract.push(position.y);
                this.tesseract.push(position.z);
-               console.log(this.tesseract);
                return position.x - this.position.x - 1;
             }
             return position.x - this.position.x;
@@ -107,7 +106,6 @@ class Player extends THREE.Group {
                this.tesseract.push(position.x );
                this.tesseract.push(position.y);
                this.tesseract.push(position.z);
-               console.log(this.tesseract);
                return position.z - this.position.z - 1;
             }
             return position.z - this.position.z;
@@ -141,7 +139,6 @@ class Player extends THREE.Group {
                   this.tesseract.push(position.x );
                   this.tesseract.push(position.y);
                   this.tesseract.push(position.z);
-                  console.log(this.tesseract);
                   return (position.x - this.position.x) * (-1) - 1;
                }
                return (position.x - this.position.x) * (-1);
@@ -175,7 +172,6 @@ class Player extends THREE.Group {
                this.tesseract.push(position.x );
                this.tesseract.push(position.y);
                this.tesseract.push(position.z);
-               console.log(this.tesseract);
                return (position.z - this.position.z) * (-1) - 1;
             }
             return (position.z - this.position.z) * (-1);
@@ -205,7 +201,6 @@ class Player extends THREE.Group {
                if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.x + 0.5) == this.slopes[0][0] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "north"){
                   this.position.y = ((this.position.x - 0.5) % 1) + this.slopes[0][1];
                }else if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.x + 0.3) == this.slopes[0][0] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "south"){
-                  console.log(1 - ((this.position.x +0.3) % 1) + this.slopes[0][1]);
                   this.position.y = 1 - ((this.position.x + 0.3) % 1) + this.slopes[0][1];
                }else if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.x + 0.3) > this.slopes[0][0] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "north"){
                   this.position.y = this.slopes[0][1] + 1;
@@ -226,7 +221,6 @@ class Player extends THREE.Group {
                if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.z + 0.5) == this.slopes[0][2] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "east"){
                   this.position.y = ((this.position.z - 0.5) % 1) + this.slopes[0][1];
                }else if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.z + 0.3) == this.slopes[0][2] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "west"){
-                  console.log(1 - ((this.position.z +0.3) % 1) + this.slopes[0][1]);
                   this.position.y = 1 - ((this.position.z + 0.3) % 1) + this.slopes[0][1];
                }else if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.z + 0.3) > this.slopes[0][2] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "east"){
                   this.position.y = this.slopes[0][1] + 1;
@@ -247,7 +241,6 @@ class Player extends THREE.Group {
                   if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.z + 0.5) == this.slopes[0][2] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "west"){
                      this.position.y = (1 - (this.position.z + 0.5) % 1) + this.slopes[0][1];
                   }else if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.z + 0.5) == this.slopes[0][2] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "east"){
-                     console.log(((this.position.z + 0.5 ) % 1) + this.slopes[0][1]);
                      this.position.y = ((this.position.z + 0.5) % 1) + this.slopes[0][1];
                   }else if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.z + 0.5) < this.slopes[0][2] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "west"){
                      this.position.y = this.slopes[0][1] + 1;
@@ -261,14 +254,13 @@ class Player extends THREE.Group {
             case "south":
 
                this.position.x -= this.deltaTime * 0.5 * (this.last_speed + this.next_speed);
-               if(this.position.x - 1 > this.tesseract[0]){
+               if(this.position.x - 1 < this.tesseract[0]){
                   this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.x = this.position.x - 0.5;
                }
 
                if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.x + 0.5) == this.slopes[0][0] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "south"){
                   this.position.y = (1 - (this.position.x + 0.5) % 1) + this.slopes[0][1];
                }else if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.x + 0.5) == this.slopes[0][0] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "north"){
-                  console.log(((this.position.x + 0.5 ) % 1) + this.slopes[0][1]);
                   this.position.y = ((this.position.x + 0.5) % 1) + this.slopes[0][1];
                }else if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.x + 0.5) < this.slopes[0][0] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "south"){
                   this.position.y = this.slopes[0][1] + 1;
@@ -291,9 +283,7 @@ class Player extends THREE.Group {
             this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.y = this.tesseract[4] + 0.5;
             this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.z = this.tesseract[5] + 0.5;
             this.tesseract.splice(0,this.tesseract.length);
-            console.log(this.level.level);
          }
-         //this.StartMove("west", Level);
          this.moving = "false";  
       }
       return;

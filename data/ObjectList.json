@@ -1,7 +1,8 @@
 {
     "Textures":{
         "RockDefault":"models/RockDefault.png",
-        "RockNormal":"models/RockNormal.png"
+        "RockNormal":"models/RockNormal.png",
+        "StartDefault":"models/StartDefault.png"
     },
     "Rock":{
         "mesh":"cube",
@@ -20,5 +21,11 @@
     "Tesseract":{
         "obj":"models/tesseract.obj",
         "scale":0.5
+    },
+    "Start":{
+        "mesh":"cube",
+        "scale":1,
+        "default":"StartDefault",
+        "normal":"RockNormal"
     }
 }

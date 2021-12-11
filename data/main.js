@@ -9,6 +9,8 @@ var camera;
 
 var p;
 
+var p_start;
+
 var level;
 
 var startx;
@@ -118,8 +120,10 @@ function onWindowResize() {
 
 window.addEventListener( 'resize', onWindowResize );
 
-document.querySelector('.gameUI').addEventListener("onButtonClick",function(eve){
+document.getElementById('reload_button').addEventListener("click",function(eve){
     console.log("reset Map");
+    level.resetTesseracts();
+    p.position.set(level.start[0],level.start[1] + 1,level.start[2]);
 });
 
 document.querySelector('#main').addEventListener("touchstart", function(eve){

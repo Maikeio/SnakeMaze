@@ -30,6 +30,7 @@ void setup() {
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/index.html");
     });
+    
 
     server.on("/three.module.js", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/three.min.js");
