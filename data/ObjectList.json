@@ -1,0 +1,24 @@
+{
+    "Textures":{
+        "RockDefault":"models/RockDefault.png",
+        "RockNormal":"models/RockNormal.png"
+    },
+    "Rock":{
+        "mesh":"cube",
+        "scale":1,
+        "default":"RockDefault",
+        "normal":"RockNormal"
+    },
+    "Slope":{
+        "obj":"models/slope.obj",
+        "scale":0.5
+    },
+    "Arrow":{
+        "obj":"models/arrow.obj",
+        "scale":0.5
+    },
+    "Tesseract":{
+        "obj":"models/tesseract.obj",
+        "scale":0.5
+    }
+}
