@@ -292,7 +292,9 @@ class Player extends THREE.Group {
    round(d) {
       if (d % 1 < 0.5) {
          return parseInt(d);
-      } else return parseInt(d) + 1;
+      } else {
+         return parseInt(d) + 1;
+      }
    }
 }
 

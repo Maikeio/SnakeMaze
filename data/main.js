@@ -24,6 +24,8 @@ var wouldMove;
 var arrow;
 var displayArrow;
 
+var startetNotInMove;
+
 var renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),
     antialias:true,
@@ -53,7 +55,7 @@ async function init(params) {
 
     //Create Level
     level = new Level(LevelTiles);
-    await level.loadLvl("models/lvl1.json");
+    await level.loadLvl("levels/lvl1.json");
     scene.add(level);
 
     //create Player
@@ -105,7 +107,6 @@ async function init(params) {
 
 function render () {
     p.move();
-
     renderer.render(scene, camera);  
     requestAnimationFrame( render );
 };
@@ -131,14 +132,15 @@ document.querySelector('#main').addEventListener("touchstart", function(eve){
         let touchobj = eve.changedTouches[0]; // erster Finger
         startx = (touchobj.clientX); // X/Y-Koordinaten relativ zum Viewport
         starty = (touchobj.clientY);
-        arrow.position.set(p.position.x, p.position.y + 0.5, p.position.z);
+        arrow.position.set(p.position.x + 0.5, p.position.y + 1, p.position.z + 0.5);
+        startetNotInMove = true;
     }
     
     eve.preventDefault();
 });
 
 document.querySelector('#main').addEventListener("touchmove", function(eve){
-     if(p.moving == "false"){
+     if(startetNotInMove && p.moving == "false"){
         let touchobj = eve.changedTouches[0]; // erster Finger
         distx = startx - (touchobj.clientX);
         disty = starty - (touchobj.clientY);
@@ -184,15 +186,17 @@ document.querySelector('#main').addEventListener("touchmove", function(eve){
  });
  
  document.querySelector('#main').addEventListener("touchend", function(eve){
-    if(p.moving == "false" && wouldMove != "none"){
+    if(wouldMove != "none" && startetNotInMove && p.moving == "false"){
         p.StartMove(wouldMove);
-        if (displayArrow){
-            let selectedObject = scene.getObjectByName(arrow.name);
-            scene.remove( selectedObject );
-            displayArrow = false;
-        }
     }
+    if (displayArrow){
+        let selectedObject = scene.getObjectByName(arrow.name);
+        scene.remove( selectedObject );
+    }
+    displayArrow = false;
+    startetNotInMove = false;
     eve.preventDefault();
+    
  });
 
 init();

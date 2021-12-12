@@ -60,7 +60,7 @@ void setup() {
     request->send(SPIFFS, "/libs/OBJLoader.js");
     });
 
-    server.on("/models/lvl1.json", HTTP_GET, [](AsyncWebServerRequest *request){
+    server.on("/levels/lvl1.json", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/models/lvl1.json");
     });
 

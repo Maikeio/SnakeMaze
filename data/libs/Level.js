@@ -84,13 +84,12 @@ class Level extends THREE.Group{
 
     resetTesseracts(){
         this.level.forEach((x, x2)=> {
-            var x2 = x2;
+            let x3 = x2;
             x.forEach((y, y2) => {
-                var y2 = y2;
+                let y3 = y2;
                 y.forEach((z, z2) => {
                     if(z[1] == "Tesseract"){
-                        console.log(x2,y2,z2);
-                        this.moveTile(x2,y2,z2,z[3][0],z[3][1],z[3][2],true);
+                        this.moveTile(x3,y3,z2,z[3][0],z[3][1],z[3][2],true);
                     }
                 })
             })
