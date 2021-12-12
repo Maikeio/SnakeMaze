@@ -53,7 +53,7 @@ async function init(params) {
 
     //Create Level
     level = new Level(LevelTiles);
-    await level.loadLvl("levels/lvl1.json");
+    await level.loadLvl("models/lvl1.json");
     scene.add(level);
 
     //create Player

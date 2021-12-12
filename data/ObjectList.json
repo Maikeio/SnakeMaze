@@ -1,6 +1,6 @@
 {
     "Textures":{
-        "RockDefault":"models/RockDefault.png",
+        "RockDefault":"models/rock_default.png",
         "RockNormal":"models/RockNormal.png",
         "StartDefault":"models/StartDefault.png"
     },
