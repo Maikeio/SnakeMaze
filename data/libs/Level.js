@@ -6,6 +6,7 @@ class Level extends THREE.Group{
         super();
         this.level=[];
         this.MapTiles = MapTiles;
+        this.previewPoints = [];
     }
 
     async loadLvl(level){
@@ -35,9 +36,12 @@ class Level extends THREE.Group{
                     if(obj[MapTile]["type"] == "Start"){
                         this.start = [obj[MapTile]["set"][0],obj[MapTile]["set"][1],obj[MapTile]["set"][2]];
                     }
+                } else if(typeof obj[MapTile]["previewPoint"] != 'undefined'){
+                    this.previewPoints.push(new THREE.Vector2(obj[MapTile]["previewPoint"][0],obj[MapTile]["previewPoint"][2]));
                 }
             }
         });
+        console.log(this.previewPoints[0]);
     }
 
     newTile(x, y, z, type, facing = "north"){
@@ -56,6 +60,7 @@ class Level extends THREE.Group{
         let tile =  new THREE.Mesh(this.MapTiles.get("objects").get(type).get("mesh"),this.MapTiles.get("objects").get(type).get("material"));
         this.add(tile);
         tile.receiveShadow = true;
+        tile.castShadow = true;
         tile.position.set(x + 0.5, y+ 0.5, z + 0.5);
         let scale = this.MapTiles.get("propaties").get(type).get("scale");
         tile.scale.set(scale, scale, scale);
@@ -79,6 +84,9 @@ class Level extends THREE.Group{
 
         if(type == "Tesseract"){
             this.level[x][y][z].push([x,y,z]);
+        }
+        if(type == "Destination"){
+            this.Destination = [x,y,z];
         }
     }
 

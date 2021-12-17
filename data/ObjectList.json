@@ -2,7 +2,9 @@
     "Textures":{
         "RockDefault":"models/rock_default.png",
         "RockNormal":"models/RockNormal.png",
-        "StartDefault":"models/StartDefault.png"
+        "StartDefault":"models/StartDefault.png",
+        "DestinationDefault":"models/DestinationDefault.png",
+        "DestinationNormal":"models/DestinationNormal.png"
     },
     "Rock":{
         "mesh":"cube",
@@ -27,5 +29,11 @@
         "scale":1,
         "default":"StartDefault",
         "normal":"RockNormal"
+    },
+    "Destination":{
+        "mesh":"cube",
+        "scale":1,
+        "default":"DestinationDefault",
+        "normal":"DestinationNormal"
     }
 }

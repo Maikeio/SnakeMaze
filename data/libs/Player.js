@@ -1,5 +1,4 @@
 import * as THREE from '/libs/three.module.js'
-import {Level} from '/libs/Level.js'
 
 class Player extends THREE.Group {
    constructor(camera, level) {
@@ -16,14 +15,11 @@ class Player extends THREE.Group {
 
 
       this.level = level;
-
       this.add(cube);
       this.add(camera);
       this.moving = "false";
       this.next_speed = 0;
       this.last_speed = 0;
-      this.deltaTime = 0;
-      this.clock = new THREE.Clock();
       this.accaleration = 0;
       this.distance = 0;
       this.position.y = 1;
@@ -72,9 +68,9 @@ class Player extends THREE.Group {
                this.tesseract.push(position.x );
                this.tesseract.push(position.y);
                this.tesseract.push(position.z);
-               return position.x - this.position.x - 1;
+               return(position.x - this.position.x - 1);
             }
-            return position.x - this.position.x;
+            return(position.x - this.position.x);
 
 
          case "east":
@@ -106,9 +102,9 @@ class Player extends THREE.Group {
                this.tesseract.push(position.x );
                this.tesseract.push(position.y);
                this.tesseract.push(position.z);
-               return position.z - this.position.z - 1;
+               return(position.z - this.position.z - 1);
             }
-            return position.z - this.position.z;
+            return(position.z - this.position.z);
 
          case "south":
                console.log("start calculate distance");
@@ -136,12 +132,12 @@ class Player extends THREE.Group {
                }
                if(this.tesseract.length != 0){
                   this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], position.x, position.y, position.z);
-                  this.tesseract.push(position.x );
+                  this.tesseract.push(position.x);
                   this.tesseract.push(position.y);
                   this.tesseract.push(position.z);
-                  return (position.x - this.position.x) * (-1) - 1;
+                  return((position.x - this.position.x) * (-1) - 1);
                }
-               return (position.x - this.position.x) * (-1);
+               return((position.x - this.position.x) * (-1));
 
          case "west":
             console.log("start calculate distance");
@@ -172,25 +168,25 @@ class Player extends THREE.Group {
                this.tesseract.push(position.x );
                this.tesseract.push(position.y);
                this.tesseract.push(position.z);
-               return (position.z - this.position.z) * (-1) - 1;
+               return((position.z - this.position.z) * (-1) - 1);
             }
-            return (position.z - this.position.z) * (-1);
+            return((position.z - this.position.z) * (-1));
 
          default:
-            return 0;
+            return(0);
       }
    }
 
 
    
-   move(Level) {
-      this.deltaTime = this.clock.getDelta();
+   move(deltaTime) {
+      
       if (this.last_speed >= 0) {
-         this.next_speed = this.last_speed + this.accaleration * this.deltaTime;
+         this.next_speed = this.last_speed + this.accaleration * deltaTime;
          switch (this.moving) {
             case "north":
                //moves forword
-               this.position.x += this.deltaTime * 0.5 * (this.last_speed + this.next_speed);
+               this.position.x += deltaTime * 0.5 * (this.last_speed + this.next_speed);
 
                //moves Tesseract
                if(this.position.x + 1 > this.tesseract[0]){
@@ -212,7 +208,7 @@ class Player extends THREE.Group {
                break;
 
             case "east":
-               this.position.z += this.deltaTime * 0.5 * (this.last_speed + this.next_speed);
+               this.position.z += deltaTime * 0.5 * (this.last_speed + this.next_speed);
 
                if(this.position.z + 1 > this.tesseract[2]){
                   this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.z = this.position.z + 1.5;
@@ -232,7 +228,7 @@ class Player extends THREE.Group {
                break;
 
             case "west":
-                  this.position.z -= this.deltaTime * 0.5 * (this.last_speed + this.next_speed);
+                  this.position.z -= deltaTime * 0.5 * (this.last_speed + this.next_speed);
 
                   if(this.position.z - 1 < this.tesseract[2]){
                      this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.z = this.position.z - 0.5;
@@ -253,7 +249,7 @@ class Player extends THREE.Group {
 
             case "south":
 
-               this.position.x -= this.deltaTime * 0.5 * (this.last_speed + this.next_speed);
+               this.position.x -= deltaTime * 0.5 * (this.last_speed + this.next_speed);
                if(this.position.x - 1 < this.tesseract[0]){
                   this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.x = this.position.x - 0.5;
                }
@@ -273,7 +269,7 @@ class Player extends THREE.Group {
    
          }
          this.last_speed = this.next_speed;
-      } else {
+      } else if(this.moving != "false"){
 
          this.position.x = this.round(this.position.x);
          this.position.y = this.round(this.position.y);
@@ -284,17 +280,32 @@ class Player extends THREE.Group {
             this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.z = this.tesseract[5] + 0.5;
             this.tesseract.splice(0,this.tesseract.length);
          }
-         this.moving = "false";  
+         this.stopMove();
       }
       return;
    }
 
    round(d) {
       if (d % 1 < 0.5) {
-         return parseInt(d);
+         return(parseInt(d));
       } else {
-         return parseInt(d) + 1;
+         return(parseInt(d) + 1);
       }
+   }
+
+   stopMove(){
+      this.moving = "false";
+      this.next_speed = 0;
+      this.last_speed = 0;
+      if(this.level.getMapTileType(this.position.x, this.position.y - 1, this.position.z) == "Destination"){
+         this.destinationFunc();
+      }
+      this.tesseract.splice(0,this.tesseract.length);
+      this.slopes.splice(0,this.slopes.length);
+   }
+
+   addDestinationFunc(destinationFunc){
+      this.destinationFunc = destinationFunc;
    }
 }
 

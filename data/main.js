@@ -9,8 +9,6 @@ var camera;
 
 var p;
 
-var p_start;
-
 var level;
 
 var startx;
@@ -25,6 +23,14 @@ var arrow;
 var displayArrow;
 
 var startetNotInMove;
+
+var LockMove = true;
+
+var clock = new THREE.Clock();
+var deltaTime;
+
+var previewCurr = new THREE.Vector2();
+var previewPoints;
 
 var renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),
@@ -57,9 +63,16 @@ async function init(params) {
     level = new Level(LevelTiles);
     await level.loadLvl("levels/lvl1.json");
     scene.add(level);
+    previewPoints = level.previewPoints;
 
     //create Player
     p = new Player(camera, level);
+    p.addDestinationFunc(()=>{
+        document.getElementById("test").innerHTML = "finish";
+        document.getElementById("test").style.opacity = "100";
+        LockMove = true;
+        console.log("finish");
+    });
     scene.add(p);
     arrow =  new THREE.Mesh(LevelTiles.get("objects").get("Arrow").get("mesh"));
     arrow.position.set(0,1.6,0);
@@ -88,7 +101,7 @@ async function init(params) {
 
     var between;
     var i = 0;
-    //Finish Animation 
+    //End Loading Animation 
     document.getElementById("test").innerHTML = "start";
     setTimeout(()=>{
         document.getElementById("test").style.opacity = 0;
@@ -99,14 +112,63 @@ async function init(params) {
     }, 1500);
     await new Promise(resolve => setTimeout(resolve, 3000));
     document.getElementById("bg").style.transition = "0s";
-    document.querySelector('.gameUI').style.opacity = 100;
-    render();
+
+    previewCurr = previewPoints[0].clone();
+    
+    previewCurr.x -= camera.position.x -5;
+    previewCurr.y -= camera.position.z -5;
+    console.log(previewCurr);
+    previewCurr.normalize();
+    previewCurr.multiplyScalar(4);
+    previewPoints.push(new THREE.Vector2(camera.x, camera.z));
+    preview();
 
 }
 
 
+function preview() {
+    deltaTime = clock.getDelta();
+    //console.log(previewPoints[0]);
+    if(((previewPoints[0].x + 5 * previewCurr.x / Math.abs(previewCurr.x)) - camera.position.x * previewCurr.x / Math.abs(previewCurr.x)) < 0 || ((previewPoints[0].y + 5 * previewCurr.y / Math.abs(previewCurr.y)) - camera.position.z * previewCurr.y / Math.abs(previewCurr.y)) < 0){
+        previewPoints.shift();
+        if(previewPoints.length == 0){
+            afterPrrview();
+            return;
+        } 
+        console.log(previewCurr);
+     
+        previewCurr = previewPoints[0].clone();
+
+        previewCurr.x -= camera.position.x - 5;
+        previewCurr.y -= camera.position.z - 5;
+        previewCurr.normalize();
+        previewCurr.multiplyScalar(4);
+        setTimeout(requestAnimationFrame( preview ), 1000);
+        return;
+    }
+
+    let distance_left = distance(camera.position.x - 5, camera.position.z - 5, previewPoints[0].x, previewPoints[0].y) + 3;
+    camera.position.x += previewCurr.x * distance_left * 0.15 * deltaTime;
+    camera.position.z += previewCurr.y * deltaTime * distance_left * 0.15;
+    renderer.render(scene, camera);  
+    requestAnimationFrame( preview );
+
+    
+};
+
+function distance(xa, ya, xb, yb){
+    return(Math.sqrt((yb-ya)**2 + (xb-xa)**2));
+}
+
+async function afterPrrview(){
+    LockMove = false;
+    document.querySelector('.gameUI').style.opacity = 100;
+    render();
+}
+
 function render () {
-    p.move();
+    deltaTime = clock.getDelta();
+    p.move(deltaTime);
     renderer.render(scene, camera);  
     requestAnimationFrame( render );
 };
@@ -122,13 +184,17 @@ function onWindowResize() {
 window.addEventListener( 'resize', onWindowResize );
 
 document.getElementById('reload_button').addEventListener("click",function(eve){
+    if(LockMove){
+        return;
+    }
     console.log("reset Map");
     level.resetTesseracts();
+    p.stopMove();
     p.position.set(level.start[0],level.start[1] + 1,level.start[2]);
 });
 
 document.querySelector('#main').addEventListener("touchstart", function(eve){
-    if(p.moving == "false"){
+    if(p.moving == "false" && !LockMove){
         let touchobj = eve.changedTouches[0]; // erster Finger
         startx = (touchobj.clientX); // X/Y-Koordinaten relativ zum Viewport
         starty = (touchobj.clientY);

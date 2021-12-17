@@ -9,6 +9,10 @@
         "type":"Start"
     },
     {
+        "set":[9,0,9],
+        "type":"Destination"
+    },
+    {
         "set":[0,1,5],
         "type":"Rock"
     },
@@ -51,5 +55,14 @@
     {
         "set":[9,1,5],
         "type":"Rock"
+    },
+    {
+        "previewPoint":[0,0,9]
+    },
+    {
+        "previewPoint":[9,0,9]
+    },
+    {
+        "previewPoint":[9,0,0]
     }
 ]
