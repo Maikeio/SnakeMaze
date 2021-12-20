@@ -42,6 +42,8 @@ var renderer = new THREE.WebGLRenderer({
     antialias:true,
 });
 
+let distance_left;
+
 
 async function init(params) {
      
@@ -75,14 +77,14 @@ async function init(params) {
         document.getElementById("test").innerHTML = "finish";
         document.getElementById("test").style.opacity = "100";
         LockMove = true;
-        level.clear();
+        level.clearMap();
         console.log("finish");
         levelCount += 1;
-        setTimeout(prepareLevel, 3000)
+        setTimeout(prepareLevel, 3000);
         setTimeout(()=>(document.getElementById("test").style.opacity = "0"),3000);
     });
     scene.add(p);
-    arrow =  new THREE.Mesh(LevelTiles.get("objects").get("Arrow").get("mesh"));
+    arrow =  new THREE.Mesh(LevelTiles.get("objects").get("Arrow")[0].geometry);
     arrow.position.set(0,1.6,0);
     arrow.scale.set(0.4,0.4,0.4);
     displayArrow = false;
@@ -134,6 +136,7 @@ async function prepareLevel(){
     console.log(previewPoints);
     preview = true;
     render();
+    console.log(level.getMapTileType(4,1,3));
 }
 
 function distance(xa, ya, xb, yb){
@@ -168,8 +171,7 @@ function render () {
             return;
         }
 
-        let distance_left = distance(camera.position.x - 5, camera.position.z - 5, previewPoints[0].x, previewPoints[0].y) + 3;
-        console.log(distance_left);
+        distance_left = distance(camera.position.x - 5, camera.position.z - 5, previewPoints[0].x, previewPoints[0].y) + 3;
         camera.position.x += previewCurr.x * distance_left * 0.15 * deltaTime;
         camera.position.z += previewCurr.y * deltaTime * distance_left * 0.15; 
     }

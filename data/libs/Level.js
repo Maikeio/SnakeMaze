@@ -7,9 +7,17 @@ class Level extends THREE.Group{
         this.level=[];
         this.MapTiles = MapTiles;
         this.previewPoints = [];
+        this.dummy = new THREE.Object3D();
     }
 
     async loadLvl(level){
+        console.log(this.MapTiles.get("objects").values());
+        for(var i of this.MapTiles.get("objects").values()){
+            console.log("a");
+            this.add(i[0]);
+            i[0].receiveShadow = true;
+            i[0].castShadow = true;
+        }
         await fetch(level).then((response)=>{
             if (response.ok) { // if HTTP-status is 200-299
                 // get the response body (the method explained below)
@@ -56,30 +64,30 @@ class Level extends THREE.Group{
         if(this.getMapTileType(x,y,z) != "Air") {
             delete this.level[x][y][z];
         }
-        let tile =  new THREE.Mesh(this.MapTiles.get("objects").get(type).get("mesh"),this.MapTiles.get("objects").get(type).get("material"));
-        this.add(tile);
-        tile.receiveShadow = true;
-        tile.castShadow = true;
-        tile.position.set(x + 0.5, y+ 0.5, z + 0.5);
-        let scale = this.MapTiles.get("propaties").get(type).get("scale");
-        tile.scale.set(scale, scale, scale);
+
+        
+        this.dummy.position.set(x + 0.5, y+ 0.5, z + 0.5);
+        this.dummy.scale.set(this.MapTiles.get("propaties").get(type).get("scale"), this.MapTiles.get("propaties").get(type).get("scale"), this.MapTiles.get("propaties").get(type).get("scale"));
         switch(facing){
             case "north":
                 break;
 
             case "east":
-                tile.rotation.y = 1.5 * Math.PI;
+                this.dummy.rotation.y = 1.5 * Math.PI;
                 break;
 
             case "south":
-                tile.rotation.y = Math.PI;
+                this.dummy.rotation.y = Math.PI;
                 break;
 
             case "west":
-                tile.rotation.y = 0.5 * Math.PI;
+                this.dummy.rotation.y = 0.5 * Math.PI;
                 break;
         }
-        this.level[x][y][z] = [tile, type, facing];
+        this.level[x][y][z] = [null, type, facing];
+        this.dummy.updateMatrix();
+        this.MapTiles.get("objects").get(type)[1]++;
+        this.MapTiles.get("objects").get(type)[0].setMatrixAt(this.MapTiles.get("objects").get(type)[1],this.dummy.matrix);
 
         if(type == "Tesseract"){
             this.level[x][y][z].push([x,y,z]);
@@ -166,9 +174,12 @@ class Level extends THREE.Group{
 
     clearMap(){
         console.log("clear Map");
-        for(x in this.level){
-            for(z in x){
-                this.remove(z[0]);
+        let m = new THREE.Matrix4();
+        for(var i of this.MapTiles.get("objects").values()){
+            i[0].instanceMatrix.needsUpdate = true;
+            for(let l = 0; l < 2000; l++){
+                i[0].setMatrixAt(l);
+                i[0].dipose;
             }
         }
         this.level.splice(0,this.level.length);
@@ -209,28 +220,27 @@ class LevelObjects extends Map{
             if(TileName == "Textures"){
                 return;
             }
-            this.get("objects").set(TileName, new Map());
+            
             if(TileMap.has("obj")){
                 let obj = await  new Promise((resolve, reject) => {
                     loader.load(TileMap.get("obj"), data=> resolve(data), null, reject);
                 });
-                this.get("objects").get(TileName).set("material", obj.children[0].material);
-                this.get("objects").get(TileName).set("mesh", obj.children[0].geometry);
-            } else{
-                this.get("objects").get(TileName).set("material", new THREE.MeshStandardMaterial());
+                this.BufferGeometry = obj.children[0].geometry;
             }
+            this.BufferMaterial = new THREE.MeshStandardMaterial();
             if(TileMap.has("default")){
-                this.get("objects").get(TileName).get("material").map = this.get("textures").get(TileMap.get("default"));
+                this.BufferMaterial.map = this.get("textures").get(TileMap.get("default"));
             }
             if(TileMap.has("normal")){
-                this.get("objects").get(TileName).get("material").normalMap = this.get("textures").get(TileMap.get("normal"));
-                this.get("objects").get(TileName).get("material").normalScale = new THREE.Vector2(0.5,0.5,0.5);
+                this.BufferMaterial.normalMap = this.get("textures").get(TileMap.get("normal"));
+                this.BufferMaterial.normalScale.set(0.5,0.5);
             }
             if(TileMap.has("mesh")){
                 if(TileMap.get("mesh") == "cube"){
-                    this.get("objects").get(TileName).set("mesh", new THREE.BoxGeometry( 1,1,1));
+                    this.BufferGeometry = new THREE.BoxGeometry( 1,1,1);
                 }
             }
+            this.get("objects").set(TileName, [new THREE.InstancedMesh(this.BufferGeometry, this.BufferMaterial, 2000),0]);
         }
         this.get("propaties").forEach((TileMap, TileName)=>{
             promises.push(processor(TileMap, TileName));

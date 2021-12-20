@@ -25,6 +25,7 @@ class Player extends THREE.Group {
       this.position.y = 1;
       this.slopes = [];
       this.tesseract = [];
+      this.next_position = new THREE.Vector3();
    }
 
    StartMove(direction) {
@@ -36,141 +37,147 @@ class Player extends THREE.Group {
    }
 
    possibleDistance() {
-      var position = this.position.clone();
+      this.next_position.x = this.position.x;
+      this.next_position.y = this.position.y;
+      this.next_position.z = this.position.z;
 
       switch (this.moving) {
          case "north":
             console.log("start calculate distance");
-            for (; (position.x - this.position.x) < 30; position.x++) {
-               if (this.level.getMapTileType(position.x + 1, position.y, position.z) == 'Air') {
-               } else if (this.tesseract.length == 0 && this.level.getMapTileType(position.x + 1, position.y, position.z) == "Slope" && (this.level.getMapTileFacing(position.x + 1, position.y, position.z) == "north")) {
-                  this.slopes.push([position.x + 1, position.y, position.z]);
-                  position.y += 1;
+            for (; (this.next_position.x - this.position.x) < 30; this.next_position.x++) {
+               if (this.level.getMapTileType(this.next_position.x + 1, this.next_position.y, this.next_position.z) == 'Air') {
+               } else if (this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x + 1, this.next_position.y, this.next_position.z) == "Slope" && (this.level.getMapTileFacing(this.next_position.x + 1, this.next_position.y, this.next_position.z) == "north")) {
+                  this.slopes.push([this.next_position.x + 1, this.next_position.y, this.next_position.z]);
+                  this.next_position.y += 1;
                   
-               } else if(this.tesseract.length == 0 && this.level.getMapTileType(position.x + 1, position.y, position.z) == "Tesseract"){
-                  this.tesseract.push(position.x + 1);
-                  this.tesseract.push(position.y);
-                  this.tesseract.push(position.z);
+               } else if(this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x + 1, this.next_position.y, this.next_position.z) == "Tesseract"){
+                  this.tesseract.push(this.next_position.x + 1);
+                  this.tesseract.push(this.next_position.y);
+                  this.tesseract.push(this.next_position.z);
                }else{
                   break;
                }
-               if (this.level.getMapTileType(position.x + 1, position.y - 1, position.z) != 'Air'){
-                  if (this.tesseract.length == 0 && this.level.getMapTileType(position.x + 1, position.y - 1, position.z) == "Slope" && this.level.getMapTileFacing(position.x + 1, position.y - 1, position.z) == "south"){
-                     this.slopes.push([position.x + 1, position.y - 1, position.z]);
-                     position.y -= 1;
+               if (this.level.getMapTileType(this.next_position.x + 1, this.next_position.y - 1, this.next_position.z) != 'Air'){
+                  if (this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x + 1, this.next_position.y - 1, this.next_position.z) == "Slope" && this.level.getMapTileFacing(this.next_position.x + 1, this.next_position.y - 1, this.next_position.z) == "south"){
+                     this.slopes.push([this.next_position.x + 1, this.next_position.y - 1, this.next_position.z]);
+                     this.next_position.y -= 1;
                   } 
                } else {
                   break;
                }
             }
             if(this.tesseract.length != 0){
-               this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], position.x, position.y, position.z);
-               this.tesseract.push(position.x );
-               this.tesseract.push(position.y);
-               this.tesseract.push(position.z);
-               return(position.x - this.position.x - 1);
+               this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], this.next_position.x, this.next_position.y, this.next_position.z);
+               this.tesseract.push(this.next_position.x );
+               this.tesseract.push(this.next_position.y);
+               this.tesseract.push(this.next_position.z);
+               this.next_position.x -= 1;
+               return(this.next_position.x - this.position.x);
             }
-            return(position.x - this.position.x);
+            return(this.next_position.x - this.position.x);
 
 
          case "east":
             console.log("start calculate distance");
-            for (; (position.z - this.position.z) < 30; position.z++) {
-               if (this.level.getMapTileType(position.x, position.y, position.z + 1) == 'Air') {
-               } else if (this.tesseract.length == 0 && this.level.getMapTileType(position.x, position.y, position.z + 1) == "Slope" && (this.level.getMapTileFacing(position.x, position.y, position.z + 1) == "east")) {
-                  this.slopes.push([position.x, position.y, position.z + 1]);
-                  position.y += 1;
+            for (; (this.next_position.z - this.position.z) < 30; this.next_position.z++) {
+               if (this.level.getMapTileType(this.next_position.x, this.next_position.y, this.next_position.z + 1) == 'Air') {
+               } else if (this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x, this.next_position.y, this.next_position.z + 1) == "Slope" && (this.level.getMapTileFacing(this.next_position.x, this.next_position.y, this.next_position.z + 1) == "east")) {
+                  this.slopes.push([this.next_position.x, this.next_position.y, this.next_position.z + 1]);
+                  this.next_position.y += 1;
                   
-               } else if(this.tesseract.length == 0 && this.level.getMapTileType(position.x, position.y, position.z + 1) == "Tesseract"){
-                  this.tesseract.push(position.x);
-                  this.tesseract.push(position.y);
-                  this.tesseract.push(position.z + 1);
+               } else if(this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x, this.next_position.y, this.next_position.z + 1) == "Tesseract"){
+                  this.tesseract.push(this.next_position.x);
+                  this.tesseract.push(this.next_position.y);
+                  this.tesseract.push(this.next_position.z + 1);
                }else{
                   break;
                }
-               if (this.level.getMapTileType(position.x, position.y - 1, position.z + 1) != 'Air'){
-                  if ((this.level.getMapTileType(position.x, position.y - 1, position.z + 1) == "Slope" && this.level.getMapTileFacing(position.x, position.y - 1, position.z + 1) == "west")){
-                     this.slopes.push([position.x, position.y - 1, position.z + 1]);
-                     position.y -= 1;
+               if (this.level.getMapTileType(this.next_position.x, this.next_position.y - 1, this.next_position.z + 1) != 'Air'){
+                  if ((this.level.getMapTileType(this.next_position.x, this.next_position.y - 1, this.next_position.z + 1) == "Slope" && this.level.getMapTileFacing(this.next_position.x, this.next_position.y - 1, this.next_position.z + 1) == "west")){
+                     this.slopes.push([this.next_position.x, this.next_position.y - 1, this.next_position.z + 1]);
+                     this.next_position.y -= 1;
                   } 
                } else {
                   break;
                }
             }
             if(this.tesseract.length != 0){
-               this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], position.x, position.y, position.z);
-               this.tesseract.push(position.x );
-               this.tesseract.push(position.y);
-               this.tesseract.push(position.z);
-               return(position.z - this.position.z - 1);
+               this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], this.next_position.x, this.next_position.y, this.next_position.z);
+               this.tesseract.push(this.next_position.x );
+               this.tesseract.push(this.next_position.y);
+               this.tesseract.push(this.next_position.z);
+               this.next_position.z -= 1;
+               return(this.next_position.z - this.position.z);
             }
-            return(position.z - this.position.z);
+            return(this.next_position.z - this.position.z);
 
          case "south":
                console.log("start calculate distance");
-               for (; (position.x - this.position.x) > -30; position.x--) {
-                  if (this.level.getMapTileType(position.x - 1, position.y, position.z) == 'Air') {
-                  } else if (this.tesseract.length == 0 && this.level.getMapTileType(position.x - 1, position.y, position.z) == "Slope" && (this.level.getMapTileFacing(position.x - 1, position.y, position.z) == "south")) {
-                     this.slopes.push([position.x - 1, position.y, position.z]);
-                     position.y += 1;
+               for (; (this.next_position.x - this.position.x) > -30; this.next_position.x--) {
+                  if (this.level.getMapTileType(this.next_position.x - 1, this.next_position.y, this.next_position.z) == 'Air') {
+                  } else if (this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x - 1, this.next_position.y, this.next_position.z) == "Slope" && (this.level.getMapTileFacing(this.next_position.x - 1, this.next_position.y, this.next_position.z) == "south")) {
+                     this.slopes.push([this.next_position.x - 1, this.next_position.y, this.next_position.z]);
+                     this.next_position.y += 1;
                      
-                  } else if(this.tesseract.length == 0 && this.level.getMapTileType(position.x - 1, position.y, position.z) == "Tesseract"){
-                     this.tesseract.push(position.x - 1);
-                     this.tesseract.push(position.y);
-                     this.tesseract.push(position.z);
+                  } else if(this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x - 1, this.next_position.y, this.next_position.z) == "Tesseract"){
+                     this.tesseract.push(this.next_position.x - 1);
+                     this.tesseract.push(this.next_position.y);
+                     this.tesseract.push(this.next_position.z);
                   }else{
                      break;
                   }
-                  if (this.level.getMapTileType(position.x - 1, position.y - 1, position.z) != 'Air'){
-                     if ((this.level.getMapTileType(position.x - 1, position.y - 1, position.z) == "Slope" && this.level.getMapTileFacing(position.x - 1, position.y - 1, position.z) == "north")){
-                        this.slopes.push([position.x - 1, position.y - 1, position.z]);
-                        position.y -= 1;
+                  if (this.level.getMapTileType(this.next_position.x - 1, this.next_position.y - 1, this.next_position.z) != 'Air'){
+                     if ((this.level.getMapTileType(this.next_position.x - 1, this.next_position.y - 1, this.next_position.z) == "Slope" && this.level.getMapTileFacing(this.next_position.x - 1, this.next_position.y - 1, this.next_position.z) == "north")){
+                        this.slopes.push([this.next_position.x - 1, this.next_position.y - 1, this.next_position.z]);
+                        this.next_position.y -= 1;
                      } 
                   } else {
                      break;
                   }
                }
                if(this.tesseract.length != 0){
-                  this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], position.x, position.y, position.z);
-                  this.tesseract.push(position.x);
-                  this.tesseract.push(position.y);
-                  this.tesseract.push(position.z);
-                  return((position.x - this.position.x) * (-1) - 1);
+                  this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], this.next_position.x, this.next_position.y, this.next_position.z);
+                  this.tesseract.push(this.next_position.x);
+                  this.tesseract.push(this.next_position.y);
+                  this.tesseract.push(this.next_position.z);
+                  this.next_position.x += 1;
+                  return((this.next_position.x - this.position.x) * (-1));
                }
-               return((position.x - this.position.x) * (-1));
+               return((this.next_position.x - this.position.x) * (-1));
 
          case "west":
             console.log("start calculate distance");
-            for (; (position.z - this.position.z) > -30; position.z--) {
-               if (this.level.getMapTileType(position.x, position.y, position.z - 1) == 'Air') {
-               } else if ( this.tesseract.length == 0 && this.level.getMapTileType(position.x, position.y, position.z - 1) == "Slope" && (this.level.getMapTileFacing(position.x, position.y, position.z - 1) == "west")) {
-                  this.slopes.push([position.x, position.y, position.z - 1]);
-                  position.y += 1;
+            for (; (this.next_position.z - this.position.z) > -30; this.next_position.z--) {
+               if (this.level.getMapTileType(this.next_position.x, this.next_position.y, this.next_position.z - 1) == 'Air') {
+               } else if ( this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x, this.next_position.y, this.next_position.z - 1) == "Slope" && (this.level.getMapTileFacing(this.next_position.x, this.next_position.y, this.next_position.z - 1) == "west")) {
+                  this.slopes.push([this.next_position.x, this.next_position.y, this.next_position.z - 1]);
+                  this.next_position.y += 1;
                   
-               } else if(this.tesseract.length == 0 && this.level.getMapTileType(position.x, position.y, position.z - 1) == "Tesseract"){
-                  this.tesseract.push(position.x);
-                  this.tesseract.push(position.y);
-                  this.tesseract.push(position.z - 1);
+               } else if(this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x, this.next_position.y, this.next_position.z - 1) == "Tesseract"){
+                  this.tesseract.push(this.next_position.x);
+                  this.tesseract.push(this.next_position.y);
+                  this.tesseract.push(this.next_position.z - 1);
                }else{
                   break;
                }
-               if (this.level.getMapTileType(position.x, position.y - 1, position.z -1) != 'Air'){
-                  if ((this.level.getMapTileType(position.x, position.y - 1, position.z - 1) == "Slope" && this.level.getMapTileFacing(position.x, position.y - 1, position.z - 1) == "east")){
-                     this.slopes.push([position.x, position.y - 1, position.z - 1]);
-                     position.y -= 1;
+               if (this.level.getMapTileType(this.next_position.x, this.next_position.y - 1, this.next_position.z -1) != 'Air'){
+                  if ((this.level.getMapTileType(this.next_position.x, this.next_position.y - 1, this.next_position.z - 1) == "Slope" && this.level.getMapTileFacing(this.next_position.x, this.next_position.y - 1, this.next_position.z - 1) == "east")){
+                     this.slopes.push([this.next_position.x, this.next_position.y - 1, this.next_position.z - 1]);
+                     this.next_position.y -= 1;
                   } 
                } else {
                   break;
                }
             }
             if(this.tesseract.length != 0){
-               this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], position.x, position.y, position.z);
-               this.tesseract.push(position.x );
-               this.tesseract.push(position.y);
-               this.tesseract.push(position.z);
-               return((position.z - this.position.z) * (-1) - 1);
+               this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], this.next_position.x, this.next_position.y, this.next_position.z);
+               this.tesseract.push(this.next_position.x );
+               this.tesseract.push(this.next_position.y);
+               this.tesseract.push(this.next_position.z);
+               this.next_position.z += 1;
+               return((this.next_position.z - this.position.z) * (-1));
             }
-            return((position.z - this.position.z) * (-1));
+            return((this.next_position.z - this.position.z) * (-1));
 
          default:
             return(0);
@@ -271,9 +278,10 @@ class Player extends THREE.Group {
          this.last_speed = this.next_speed;
       } else if(this.moving != "false"){
 
-         this.position.x = this.round(this.position.x);
-         this.position.y = this.round(this.position.y);
-         this.position.z = this.round(this.position.z);
+         this.position.x = this.next_position.x;
+         this.position.y = this.next_position.y;
+         this.position.z = this.next_position.z;
+
          if(this.tesseract.length != 0){
             this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.x = this.tesseract[3] + 0.5;
             this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.y = this.tesseract[4] + 0.5;
