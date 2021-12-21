@@ -8,13 +8,14 @@ class Level extends THREE.Group{
         this.MapTiles = MapTiles;
         this.previewPoints = [];
         this.dummy = new THREE.Object3D();
+        this.zeromatrix = new THREE.Matrix4();
+        this.zeromatrix.set(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
     }
 
     async loadLvl(level){
-        console.log(this.MapTiles.get("objects").values());
         for(var i of this.MapTiles.get("objects").values()){
-            console.log("a");
             this.add(i[0]);
+            console.log(i);
             i[0].receiveShadow = true;
             i[0].castShadow = true;
         }
@@ -48,6 +49,7 @@ class Level extends THREE.Group{
                     this.previewPoints.push(new THREE.Vector2(obj[MapTile]["previewPoint"][0],obj[MapTile]["previewPoint"][2]));
                 }
             }
+            console.log(this.MapTiles.get("objects").get("HalfBlock")[0].instanceMatrix);
         });
     }
 
@@ -55,6 +57,7 @@ class Level extends THREE.Group{
         x = parseInt(x);
         y = parseInt(y);
         z = parseInt(z);
+        console.log(type);
         if (typeof this.level[x] == 'undefined') {
             this.level[x] = [];
         }
@@ -62,6 +65,11 @@ class Level extends THREE.Group{
             this.level[x][y] = [];
         }
         if(this.getMapTileType(x,y,z) != "Air") {
+            console.log(this.getMapTileType(x,y,z));
+            
+            this.MapTiles.get("objects").get(this.getMapTileType(x,y,z))[0].setMatrixAt(this.level[x][y][z][0],this.zeromatrix);
+            this.MapTiles.get("objects").get(this.getMapTileType(x,y,z))[0].instanceMatrix.needsUpdate = true;
+            this.MapTiles.get("objects").get(this.getMapTileType(x,y,z))[0].dispose();
             delete this.level[x][y][z];
         }
 
@@ -84,10 +92,10 @@ class Level extends THREE.Group{
                 this.dummy.rotation.y = 0.5 * Math.PI;
                 break;
         }
-        this.level[x][y][z] = [null, type, facing];
         this.dummy.updateMatrix();
-        this.MapTiles.get("objects").get(type)[1]++;
         this.MapTiles.get("objects").get(type)[0].setMatrixAt(this.MapTiles.get("objects").get(type)[1],this.dummy.matrix);
+        this.level[x][y][z] = [this.MapTiles.get("objects").get(type)[1], type, facing];
+        this.MapTiles.get("objects").get(type)[1]++;
 
         if(type == "Tesseract"){
             this.level[x][y][z].push([x,y,z]);
@@ -177,12 +185,14 @@ class Level extends THREE.Group{
         let m = new THREE.Matrix4();
         for(var i of this.MapTiles.get("objects").values()){
             i[0].instanceMatrix.needsUpdate = true;
-            for(let l = 0; l < 2000; l++){
-                i[0].setMatrixAt(l);
-                i[0].dipose;
+            for(let l = 0; l < i[1]; l++){
+                i[0].setMatrixAt(l,this.zeromatrix);
             }
+            i[0].dipose;
+            i[1] = 0;
         }
         this.level.splice(0,this.level.length);
+        this.clear();
     }
   
 }
@@ -221,26 +231,30 @@ class LevelObjects extends Map{
                 return;
             }
             
+            let BufferMaterial = new THREE.MeshStandardMaterial();
+            let BufferGeometry;
+            
+            if(TileMap.has("default")){
+                console.log(TileMap.get("default"));
+                BufferMaterial.map = this.get("textures").get(TileMap.get("default"));
+            }
+            if(TileMap.has("normal")){
+                BufferMaterial.normalMap = this.get("textures").get(TileMap.get("normal"));
+                BufferMaterial.normalScale.set(1,0.7);
+            }
             if(TileMap.has("obj")){
                 let obj = await  new Promise((resolve, reject) => {
                     loader.load(TileMap.get("obj"), data=> resolve(data), null, reject);
                 });
-                this.BufferGeometry = obj.children[0].geometry;
-            }
-            this.BufferMaterial = new THREE.MeshStandardMaterial();
-            if(TileMap.has("default")){
-                this.BufferMaterial.map = this.get("textures").get(TileMap.get("default"));
-            }
-            if(TileMap.has("normal")){
-                this.BufferMaterial.normalMap = this.get("textures").get(TileMap.get("normal"));
-                this.BufferMaterial.normalScale.set(0.5,0.5);
+                BufferGeometry = obj.children[0].geometry;
+                BufferMaterial.normalScale.set(0.3,0.0);
             }
             if(TileMap.has("mesh")){
                 if(TileMap.get("mesh") == "cube"){
-                    this.BufferGeometry = new THREE.BoxGeometry( 1,1,1);
+                    BufferGeometry = new THREE.BoxGeometry( 1,1,1);
                 }
             }
-            this.get("objects").set(TileName, [new THREE.InstancedMesh(this.BufferGeometry, this.BufferMaterial, 2000),0]);
+            this.get("objects").set(TileName, [new THREE.InstancedMesh(BufferGeometry, BufferMaterial, 1000),0]);
         }
         this.get("propaties").forEach((TileMap, TileName)=>{
             promises.push(processor(TileMap, TileName));
