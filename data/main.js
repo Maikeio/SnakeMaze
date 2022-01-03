@@ -12,6 +12,7 @@ var p;
 var level;
 
 var levelCount = 1;
+var levelLast = 3;
 
 var startx;
 var starty;
@@ -68,22 +69,32 @@ async function init(params) {
 
     //Create Level
     level = new Level(LevelTiles);
+    
 
     scene.add(level);
 
     //create Player
     p = new Player(camera, level);
+    //function called if player is on the destination tile
     p.addDestinationFunc(()=>{
+        levelCount += 1;
         document.getElementById("test").innerHTML = "finish";
         document.getElementById("test").style.opacity = "100";
         LockMove = true;
         level.clearMap();
         console.log("finish");
-        levelCount += 1;
-        setTimeout(prepareLevel, 3000);
-        setTimeout(()=>(document.getElementById("test").style.opacity = "0"),3000);
+        
+        if(levelCount > levelLast){
+            setTimeout(()=>(location.href = "wonToOpen.html"), 3000);
+        } else {
+            setTimeout(()=>(document.getElementById("test").style.opacity = "0"),3000);
+            setTimeout(prepareLevel, 3000);
+        }
+        
     });
     scene.add(p);
+
+    //add arrow, showing diraction player would move
     arrow =  new THREE.Mesh(LevelTiles.get("objects").get("Arrow")[0].geometry);
     arrow.position.set(0,1.6,0);
     arrow.scale.set(0.4,0.4,0.4);
@@ -99,6 +110,7 @@ async function init(params) {
     DirectLight.shadow.mapSize.height = 1024
     scene.add(DirectLight)
 
+    //add light from opposit side, so normals don't show of by only one side
     const AntiDirectLight = new THREE.DirectionalLight(0xFFFFFF, 0.1);
     AntiDirectLight.position.set(5,10,-5);
     AntiDirectLight.shadow.camera.zoom = 0.3; // default
@@ -109,7 +121,7 @@ async function init(params) {
     scene.add(light)
 
 
-    //End Loading Animation 
+    //transition from loading to game
     document.getElementById("test").innerHTML = "start";
     setTimeout(()=>{
         document.getElementById("test").style.opacity = 0;
@@ -120,23 +132,27 @@ async function init(params) {
     }, 1500);
     await new Promise(resolve => setTimeout(resolve, 3000));
     document.getElementById("bg").style.transition = "0s";
+
     prepareLevel();
 }
 
+//function for loading next lvl
 async function prepareLevel(){
     await level.loadLvl("levels/lvl" + levelCount + ".json");
+    //set player to start position
     p.position.set(level.start[0],level.start[1] + 1,level.start[2]);
     previewPoints = level.previewPoints;
-    previewCurr = previewPoints[0].clone();
+    previewCurr.x = previewPoints[0].x;
+    previewCurr.y = previewPoints[0].y;
     previewCurr.x -= camera.position.x -5;
     previewCurr.y -= camera.position.z -5;
     previewCurr.normalize();
     previewCurr.multiplyScalar(4);
     previewPoints.push(new THREE.Vector2(camera.x, camera.z));
-    console.log(previewPoints);
     preview = true;
+    document.getElementById("levelCounter").innerHTML = levelCount + "/" + levelLast;
+    level.init();
     render();
-    console.log(level.getMapTileType(4,1,3));
 }
 
 function distance(xa, ya, xb, yb){
@@ -145,7 +161,10 @@ function distance(xa, ya, xb, yb){
 
 async function afterPrrview(){
     LockMove = false;
-    document.querySelector('.gameUI').style.opacity = 100;
+    for(let i of document.getElementsByClassName("gameUI")){
+        i.style.opacity = 100;
+    }
+    
     preview = false;
 }
 
@@ -161,7 +180,8 @@ function render () {
                 return;
             } 
         
-            previewCurr = previewPoints[0].clone();
+            previewCurr.x = previewPoints[0].x;
+            previewCurr.y = previewPoints[0].y;
 
             previewCurr.x -= camera.position.x - 5;
             previewCurr.y -= camera.position.z - 5;

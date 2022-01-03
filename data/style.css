@@ -29,12 +29,28 @@ height: 100%;
     opacity: 0;
 }
 
+#resetImg{
+    width: 100%;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
 #reload_button{
     width: 3cm;
     height: 3cm;
     float: right;
     margin: 0.5cm;
     position: relative;
+    background-color: transparent;
+    border: none;
+}
+#levelCounter{
+    width: 5cm;
+    margin: 0.5cm;
+    float: left;
+    position: absolute;
 }
 
 h1{

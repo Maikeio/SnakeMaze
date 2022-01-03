@@ -10,15 +10,20 @@ class Level extends THREE.Group{
         this.dummy = new THREE.Object3D();
         this.zeromatrix = new THREE.Matrix4();
         this.zeromatrix.set(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        
+    }
+
+    init(){
+        for(var i of this.MapTiles.get("objects").values()){
+            this.add(i[0]);
+            i[0].receiveShadow = true;
+            i[0].castShadow = true;
+            i[0].instanceMatrix.needsUpdate = true;
+        }
     }
 
     async loadLvl(level){
-        for(var i of this.MapTiles.get("objects").values()){
-            this.add(i[0]);
-            console.log(i);
-            i[0].receiveShadow = true;
-            i[0].castShadow = true;
-        }
+       
         await fetch(level).then((response)=>{
             if (response.ok) { // if HTTP-status is 200-299
                 // get the response body (the method explained below)
@@ -49,8 +54,12 @@ class Level extends THREE.Group{
                     this.previewPoints.push(new THREE.Vector2(obj[MapTile]["previewPoint"][0],obj[MapTile]["previewPoint"][2]));
                 }
             }
-            console.log(this.MapTiles.get("objects").get("HalfBlock")[0].instanceMatrix);
+            console.log(this.MapTiles.get("objects").get("Destination")[0].instanceMatrix);
         });
+        for(let i of this.children){
+            console.log(i.instanceMatrix.array);
+        }
+        
     }
 
     newTile(x, y, z, type, facing = "north"){
@@ -78,6 +87,7 @@ class Level extends THREE.Group{
         this.dummy.scale.set(this.MapTiles.get("propaties").get(type).get("scale"), this.MapTiles.get("propaties").get(type).get("scale"), this.MapTiles.get("propaties").get(type).get("scale"));
         switch(facing){
             case "north":
+                this.dummy.rotation.y = 0;
                 break;
 
             case "east":
@@ -93,7 +103,9 @@ class Level extends THREE.Group{
                 break;
         }
         this.dummy.updateMatrix();
+        this.MapTiles.get("objects").get(type)[0].count = this.MapTiles.get("objects").get(type)[1] + 1;
         this.MapTiles.get("objects").get(type)[0].setMatrixAt(this.MapTiles.get("objects").get(type)[1],this.dummy.matrix);
+       
         this.level[x][y][z] = [this.MapTiles.get("objects").get(type)[1], type, facing];
         this.MapTiles.get("objects").get(type)[1]++;
 
@@ -254,7 +266,8 @@ class LevelObjects extends Map{
                     BufferGeometry = new THREE.BoxGeometry( 1,1,1);
                 }
             }
-            this.get("objects").set(TileName, [new THREE.InstancedMesh(BufferGeometry, BufferMaterial, 1000),0]);
+            this.get("objects").set(TileName, [new THREE.InstancedMesh(BufferGeometry, BufferMaterial, 100),0]);
+            this.get("objects").get(TileName)[0].instanceMatrix.setUsage( THREE.DynamicDrawUsage );
         }
         this.get("propaties").forEach((TileMap, TileName)=>{
             promises.push(processor(TileMap, TileName));

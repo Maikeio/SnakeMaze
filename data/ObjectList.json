@@ -4,13 +4,26 @@
         "RockNormal":"models/RockNormal.png",
         "StartDefault":"models/StartDefault.png",
         "DestinationDefault":"models/DestinationDefault.png",
-        "DestinationNormal":"models/DestinationNormal.png"
+        "DestinationNormal":"models/DestinationNormal.png",
+        "SandNormal":"models/SandNormal.png"
+    },
+    "Destination":{
+        "obj":"models/block.obj",
+        "scale":0.5,
+        "default":"DestinationDefault",
+        "normal":"DestinationNormal"
     },
     "Rock":{
-        "mesh":"cube",
-        "scale":1,
+        "obj":"models/block.obj",
+        "scale":0.5,
         "default":"RockDefault",
         "normal":"RockNormal"
+    },
+    "Sand":{
+        "obj":"models/block.obj",
+        "scale":0.5,
+        "default":"RockDefault",
+        "normal":"SandNormal"
     },
     "Slope":{
         "obj":"models/slope.obj",
@@ -31,12 +44,6 @@
         "scale":0.5,
         "default":"StartDefault",
         "normal":"RockNormal"
-    },
-    "Destination":{
-        "obj":"models/block.obj",
-        "scale":0.5,
-        "default":"DestinationDefault",
-        "normal":"DestinationNormal"
     },
     "HalfBlock":{
         "obj":"models/halfBlock.obj",
