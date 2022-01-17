@@ -11,44 +11,52 @@
         "obj":"models/block.obj",
         "scale":0.5,
         "default":"DestinationDefault",
-        "normal":"DestinationNormal"
+        "normal":"DestinationNormal",
+        "count":4
     },
     "Rock":{
         "obj":"models/block.obj",
         "scale":0.5,
         "default":"RockDefault",
-        "normal":"RockNormal"
+        "normal":"RockNormal",
+        "count":10
     },
     "Sand":{
         "obj":"models/block.obj",
         "scale":0.5,
         "default":"RockDefault",
-        "normal":"SandNormal"
+        "normal":"SandNormal",
+        "count":100
     },
     "Slope":{
         "obj":"models/slope.obj",
         "scale":0.5,
         "default":"RockDefault",
-        "normal":"RockNormal"
+        "normal":"RockNormal",
+        "count":10
     },
     "Arrow":{
         "obj":"models/arrow.obj",
-        "scale":0.5
+        "scale":0.5,
+        "count":1
     },
     "Tesseract":{
         "obj":"models/tesseract.obj",
-        "scale":0.5
+        "scale":0.5,
+        "count":5
     },
     "Start":{
         "obj":"models/block.obj",
         "scale":0.5,
         "default":"StartDefault",
-        "normal":"RockNormal"
+        "normal":"RockNormal",
+        "count":1
     },
     "HalfBlock":{
         "obj":"models/halfBlock.obj",
         "scale":0.5,
         "default":"RockDefault",
-        "normal":"RockNormal"
+        "normal":"RockNormal",
+        "count":10
     }
 }

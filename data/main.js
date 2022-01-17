@@ -12,7 +12,7 @@ var p;
 var level;
 
 var levelCount = 1;
-var levelLast = 3;
+var levelLast = 4;
 
 var startx;
 var starty;
@@ -196,6 +196,7 @@ function render () {
         camera.position.z += previewCurr.y * deltaTime * distance_left * 0.15; 
     }
     p.move(deltaTime);
+    camera.updateProjectionMatrix();
     renderer.render(scene, camera);  
     requestAnimationFrame( render );
 }

@@ -54,7 +54,7 @@ class Level extends THREE.Group{
                     this.previewPoints.push(new THREE.Vector2(obj[MapTile]["previewPoint"][0],obj[MapTile]["previewPoint"][2]));
                 }
             }
-            console.log(this.MapTiles.get("objects").get("Destination")[0].instanceMatrix);
+            //this.MapTiles.get("objects").get("Sand")[0].count = 5;
         });
         for(let i of this.children){
             console.log(i.instanceMatrix.array);
@@ -66,7 +66,6 @@ class Level extends THREE.Group{
         x = parseInt(x);
         y = parseInt(y);
         z = parseInt(z);
-        console.log(type);
         if (typeof this.level[x] == 'undefined') {
             this.level[x] = [];
         }
@@ -74,8 +73,6 @@ class Level extends THREE.Group{
             this.level[x][y] = [];
         }
         if(this.getMapTileType(x,y,z) != "Air") {
-            console.log(this.getMapTileType(x,y,z));
-            
             this.MapTiles.get("objects").get(this.getMapTileType(x,y,z))[0].setMatrixAt(this.level[x][y][z][0],this.zeromatrix);
             this.MapTiles.get("objects").get(this.getMapTileType(x,y,z))[0].instanceMatrix.needsUpdate = true;
             this.MapTiles.get("objects").get(this.getMapTileType(x,y,z))[0].dispose();
@@ -165,7 +162,27 @@ class Level extends THREE.Group{
             return "none";
          } else if (typeof this.level[x][y][z] == 'undefined') {
             return "none";
-         } else return this.level[x][y][z][0];;
+         } else return this.level[x][y][z][0];
+    }
+
+    setTileVisual(x,y,z, x1,y1,z1){
+        x = parseInt(x);
+        y = parseInt(y);
+        z = parseInt(z);
+        if (typeof this.level[x] == 'undefined') {
+        return "none";
+        } else if (typeof this.level[x][y] == 'undefined') {
+        return "none";
+        } else if (typeof this.level[x][y][z] == 'undefined') {
+        return "none";
+        }
+        this.dummy.position.set(x1 ,y1 ,z1 );
+        this.dummy.updateMatrix();
+        let type = this.getMapTileType(x,y,z);
+        //console.log(type);
+        console.log(this.level[x][y][z]);
+        this.MapTiles.get("objects").get(type)[0].setMatrixAt(this.level[x][y][z][0],this.dummy.matrix);
+        this.MapTiles.get("objects").get(type)[0].instanceMatrix.needsUpdate = true;
     }
 
     moveTile(x1,y1,z1,x2,y2,z2, moveMesh = false){
@@ -188,7 +205,8 @@ class Level extends THREE.Group{
         delete this.level[x1][y1][z1];
 
         if(moveMesh){
-            this.level[x2][y2][z2][0].position.set(x2 + 0.5,y2 + 0.5,z2 + 0.5);
+            this.setTileVisual(x2,y2,z2, x2 + 0.5,y2 + 0.5, z2 +0.5);
+            //this.level[x2][y2][z2][0].position.set(x2 + 0.5,y2 + 0.5,z2 + 0.5);
         }
     }
 
@@ -247,7 +265,6 @@ class LevelObjects extends Map{
             let BufferGeometry;
             
             if(TileMap.has("default")){
-                console.log(TileMap.get("default"));
                 BufferMaterial.map = this.get("textures").get(TileMap.get("default"));
             }
             if(TileMap.has("normal")){
@@ -266,7 +283,7 @@ class LevelObjects extends Map{
                     BufferGeometry = new THREE.BoxGeometry( 1,1,1);
                 }
             }
-            this.get("objects").set(TileName, [new THREE.InstancedMesh(BufferGeometry, BufferMaterial, 100),0]);
+            this.get("objects").set(TileName, [new THREE.InstancedMesh(BufferGeometry, BufferMaterial, TileMap.get("count")),0]);
             this.get("objects").get(TileName)[0].instanceMatrix.setUsage( THREE.DynamicDrawUsage );
         }
         this.get("propaties").forEach((TileMap, TileName)=>{

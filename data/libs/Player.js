@@ -31,7 +31,6 @@ class Player extends THREE.Group {
    StartMove(direction) {
       this.moving = direction;
       this.distance = this.possibleDistance();
-      console.log(this.distance);
       this.accaleration = this.distance / ((2 - 1 / this.distance) ** 2 * (-0.5));
       this.last_speed = (-1) * this.accaleration * (2 - 1 / this.distance);
    }
@@ -78,7 +77,6 @@ class Player extends THREE.Group {
 
 
          case "east":
-            console.log("start calculate distance");
             for (; (this.next_position.z - this.position.z) < 30; this.next_position.z++) {
                if (this.level.getMapTileType(this.next_position.x, this.next_position.y, this.next_position.z + 1) == 'Air') {
                } else if (this.tesseract.length == 0 && this.level.getMapTileType(this.next_position.x, this.next_position.y, this.next_position.z + 1) == "Slope" && (this.level.getMapTileFacing(this.next_position.x, this.next_position.y, this.next_position.z + 1) == "east")) {
@@ -171,7 +169,7 @@ class Player extends THREE.Group {
             }
             if(this.tesseract.length != 0){
                this.level.moveTile(this.tesseract[0],this.tesseract[1],this.tesseract[2], this.next_position.x, this.next_position.y, this.next_position.z);
-               this.tesseract.push(this.next_position.x );
+               this.tesseract.push(this.next_position.x);
                this.tesseract.push(this.next_position.y);
                this.tesseract.push(this.next_position.z);
                this.next_position.z += 1;
@@ -197,7 +195,7 @@ class Player extends THREE.Group {
 
                //moves Tesseract
                if(this.position.x + 1 > this.tesseract[0]){
-                  this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.x = this.position.x + 1.5;
+                  this.level.setTileVisual(this.tesseract[3], this.tesseract[4], this.tesseract[5], this.position.x + 1.5, this.position.y + 0.5, this.position.z + 0.5);
                }
 
                //move slopes up dowm
@@ -218,7 +216,7 @@ class Player extends THREE.Group {
                this.position.z += deltaTime * 0.5 * (this.last_speed + this.next_speed);
 
                if(this.position.z + 1 > this.tesseract[2]){
-                  this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.z = this.position.z + 1.5;
+                  this.level.setTileVisual(this.tesseract[3], this.tesseract[4], this.tesseract[5], this.position.x + 0.5, this.position.y + 0.5, this.position.z + 1.5);
                }
 
                if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.z + 0.5) == this.slopes[0][2] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "east"){
@@ -238,7 +236,7 @@ class Player extends THREE.Group {
                   this.position.z -= deltaTime * 0.5 * (this.last_speed + this.next_speed);
 
                   if(this.position.z - 1 < this.tesseract[2]){
-                     this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.z = this.position.z - 0.5;
+                     this.level.setTileVisual(this.tesseract[3], this.tesseract[4], this.tesseract[5], this.position.x + 0.5, this.position.y + 0.5, this.position.z - 0.5);
                   }
 
                   if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.z + 0.5) == this.slopes[0][2] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "west"){
@@ -258,7 +256,7 @@ class Player extends THREE.Group {
 
                this.position.x -= deltaTime * 0.5 * (this.last_speed + this.next_speed);
                if(this.position.x - 1 < this.tesseract[0]){
-                  this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.x = this.position.x - 0.5;
+                  this.level.setTileVisual(this.tesseract[3], this.tesseract[4], this.tesseract[5], this.position.x - 0.5, this.position.y + 0.5, this.position.z + 0.5);
                }
 
                if(typeof this.slopes[0] != 'undefined' && parseInt(this.position.x + 0.5) == this.slopes[0][0] && this.level.getMapTileFacing(this.slopes[0][0],this.slopes[0][1], this.slopes[0][2]) == "south"){
@@ -283,9 +281,10 @@ class Player extends THREE.Group {
          this.position.z = this.next_position.z;
 
          if(this.tesseract.length != 0){
-            this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.x = this.tesseract[3] + 0.5;
+            this.level.setTileVisual(this.tesseract[3], this.tesseract[4], this.tesseract[5], this.tesseract[3] + 0.5, this.tesseract[4] + 0.5, this.tesseract[5] + 0.5);
+            /* this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.x = this.tesseract[3] + 0.5;
             this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.y = this.tesseract[4] + 0.5;
-            this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.z = this.tesseract[5] + 0.5;
+            this.level.getMapTileMesh(this.tesseract[3], this.tesseract[4], this.tesseract[5]).position.z = this.tesseract[5] + 0.5; */
             this.tesseract.splice(0,this.tesseract.length);
          }
          this.stopMove();
