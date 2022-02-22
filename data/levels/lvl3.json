@@ -95,9 +95,15 @@
         "type":"Rock"
     },
     {
-        "previewPoint":[0,0,8]
+        "previewPoint":[8,7,13]
     },
     {
-        "previewPoint":[5,0,5]
+        "previewPoint":[16,7,16]
+    },
+    {
+        "previewPoint":[16,7,6]
+    },
+    {
+        "previewPoint":[17,15,17]
     }
 ]

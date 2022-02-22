@@ -51,7 +51,7 @@ class Level extends THREE.Group{
                         this.start = [obj[MapTile]["set"][0],obj[MapTile]["set"][1],obj[MapTile]["set"][2]];
                     }
                 } else if(typeof obj[MapTile]["previewPoint"] != 'undefined'){
-                    this.previewPoints.push(new THREE.Vector2(obj[MapTile]["previewPoint"][0],obj[MapTile]["previewPoint"][2]));
+                    this.previewPoints.push(new THREE.Vector3(obj[MapTile]["previewPoint"][0],obj[MapTile]["previewPoint"][1],obj[MapTile]["previewPoint"][2]));
                 }
             }
             //this.MapTiles.get("objects").get("Sand")[0].count = 5;
@@ -176,11 +176,11 @@ class Level extends THREE.Group{
         } else if (typeof this.level[x][y][z] == 'undefined') {
         return "none";
         }
-        this.dummy.position.set(x1 ,y1 ,z1 );
-        this.dummy.updateMatrix();
         let type = this.getMapTileType(x,y,z);
-        //console.log(type);
-        console.log(this.level[x][y][z]);
+        this.dummy.position.set(x1 ,y1 ,z1 );
+        this.dummy.scale.set(this.MapTiles.get("propaties").get(type).get("scale"), this.MapTiles.get("propaties").get(type).get("scale"), this.MapTiles.get("propaties").get(type).get("scale"));
+        this.dummy.updateMatrix();
+        
         this.MapTiles.get("objects").get(type)[0].setMatrixAt(this.level[x][y][z][0],this.dummy.matrix);
         this.MapTiles.get("objects").get(type)[0].instanceMatrix.needsUpdate = true;
     }
@@ -261,7 +261,8 @@ class LevelObjects extends Map{
                 return;
             }
             
-            let BufferMaterial = new THREE.MeshStandardMaterial();
+            let BufferMaterial = new THREE.MeshPhongMaterial();
+            BufferMaterial.shininess = 0;
             let BufferGeometry;
             
             if(TileMap.has("default")){
@@ -269,14 +270,17 @@ class LevelObjects extends Map{
             }
             if(TileMap.has("normal")){
                 BufferMaterial.normalMap = this.get("textures").get(TileMap.get("normal"));
-                BufferMaterial.normalScale.set(1,0.7);
+                BufferMaterial.normalScale.set(0.5,0.1);
+            }
+            if(TileMap.has("normalscale")){
+                BufferMaterial.normalScale.set(TileMap.get("normalscale")[0],TileMap.get("normalscale")[1]);
             }
             if(TileMap.has("obj")){
                 let obj = await  new Promise((resolve, reject) => {
                     loader.load(TileMap.get("obj"), data=> resolve(data), null, reject);
                 });
                 BufferGeometry = obj.children[0].geometry;
-                BufferMaterial.normalScale.set(0.3,0.0);
+                BufferMaterial.normalScale.set(0.1,0.3);
             }
             if(TileMap.has("mesh")){
                 if(TileMap.get("mesh") == "cube"){

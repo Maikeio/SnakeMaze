@@ -1,7 +1,7 @@
 import * as THREE from '/libs/three.module.js'
 
 class Player extends THREE.Group {
-   constructor(camera, level) {
+   constructor(level) {
       super();
       var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
       var material = new THREE.MeshStandardMaterial({ color: "#433F81" });
@@ -16,7 +16,6 @@ class Player extends THREE.Group {
 
       this.level = level;
       this.add(cube);
-      this.add(camera);
       this.moving = "false";
       this.next_speed = 0;
       this.last_speed = 0;

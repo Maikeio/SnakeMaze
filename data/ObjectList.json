@@ -8,24 +8,25 @@
         "SandNormal":"models/SandNormal.png"
     },
     "Destination":{
-        "obj":"models/block.obj",
-        "scale":0.5,
+        "mesh":"cube",
+        "scale":1,
         "default":"DestinationDefault",
         "normal":"DestinationNormal",
         "count":4
     },
     "Rock":{
-        "obj":"models/block.obj",
-        "scale":0.5,
+        "mesh":"cube",
+        "scale":1,
         "default":"RockDefault",
         "normal":"RockNormal",
-        "count":10
+        "count":30
     },
     "Sand":{
-        "obj":"models/block.obj",
-        "scale":0.5,
+        "mesh":"cube",
+        "scale":1,
         "default":"RockDefault",
         "normal":"SandNormal",
+        "normalscale":[0.05,0.2],
         "count":100
     },
     "Slope":{
@@ -46,8 +47,8 @@
         "count":5
     },
     "Start":{
-        "obj":"models/block.obj",
-        "scale":0.5,
+        "mesh":"cube",
+        "scale":1,
         "default":"StartDefault",
         "normal":"RockNormal",
         "count":1

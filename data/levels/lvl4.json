@@ -1,66 +1,31 @@
 [
-
     {
-        "fill":[[0,0,0],[9,0,9]],
+        "fill":[[7,0,5],[10,0,8]],
         "type":"Sand"
     },
     {
-        "set":[0,0,0],
+        "fill":[[8,0,9],[9,0,9]],
+        "type":"Sand"
+    },
+    {
+        "set":[6,0,6],
         "type":"Start"
     },
     {
-        "set":[0,0,9],
+        "set":[7,1,6],
+        "type":"Tesseract"
+    },
+    {
+        "set":[8,0,6],
+        "type":"Tesseract"
+    },
+    {
+        "set":[10,1,5],
         "type":"Destination"
     },
     {
-        "set":[0,1,5],
-        "type":"Rock"
-    },
-    {
-        "set":[2,1,0],
-        "type":"Tesseract"
-    },
-    {
-        "set":[0,1,4],
-        "type":"Slope",
-        "facing":"east"
-    },
-    {
-        "set":[0,1,6],
+        "set":[10,1,7],
         "type":"Slope",
         "facing":"west"
-    },
-    {
-        "set":[5,1,0],
-        "type":"Rock"
-    },
-    {
-        "set":[4,1,0],
-        "type":"Slope",
-        "facing":"north"
-    },
-    {
-        "set":[6,1,0],
-        "type":"Slope",
-        "facing":"south"
-    },
-    {
-        "set":[8,1,8],
-        "type":"Tesseract"
-    },
-    {
-        "set":[6,1,8],
-        "type":"Tesseract"
-    },
-    {
-        "set":[1,1,9],
-        "type":"Rock"
-    },
-    {
-        "set":[9,1,5],
-        "type":"Rock"
-    },
-    {
-        "previewPoint":[0,0,1]
     }
 ]

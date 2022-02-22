@@ -7,11 +7,13 @@ var scene;
 
 var camera;
 
+var camerapoint = new THREE.Vector3();
+
 var p;
 
 var level;
 
-var levelCount = 1;
+var levelCount = 4;
 var levelLast = 4;
 
 var startx;
@@ -32,9 +34,10 @@ var LockMove = true;
 var clock = new THREE.Clock();
 var deltaTime;
 
-var previewCurr = new THREE.Vector2();
 var previewPoints;
 
+var MusicFade;
+var MusicLoop;
 
 var preview;
 
@@ -48,6 +51,8 @@ let distance_left;
 
 async function init(params) {
      
+    MusicFade = new Audio("Schlangentempel Fade-In.wav");
+
     scene = new THREE.Scene(); 
 
     //define Renderer
@@ -62,6 +67,7 @@ async function init(params) {
     camera = new THREE.PerspectiveCamera( 50, window.innerWidth/window.innerHeight, 0.1, 1000 );
     camera.position.set(5, 5, 5);
     camera.lookAt(1,0,1);
+    scene.add(camera);
 
     //Load Objects
     let LevelTiles = new LevelObjects();
@@ -74,7 +80,7 @@ async function init(params) {
     scene.add(level);
 
     //create Player
-    p = new Player(camera, level);
+    p = new Player(level);
     //function called if player is on the destination tile
     p.addDestinationFunc(()=>{
         levelCount += 1;
@@ -106,16 +112,17 @@ async function init(params) {
     DirectLight.position.set(5,10,-5);
     DirectLight.shadow.camera.zoom = 0.3; // default
     DirectLight.castShadow = true;
-    DirectLight.shadow.mapSize.width = 1024; // default
-    DirectLight.shadow.mapSize.height = 1024
+    DirectLight.shadow.mapSize.width = 512; // default
+    DirectLight.shadow.mapSize.height = 512
+    DirectLight.shadow.radius = 3;
     scene.add(DirectLight)
 
     //add light from opposit side, so normals don't show of by only one side
-    const AntiDirectLight = new THREE.DirectionalLight(0xFFFFFF, 0.1);
+    /* const AntiDirectLight = new THREE.DirectionalLight(0xFFFFFF, 0.1);
     AntiDirectLight.position.set(5,10,-5);
     AntiDirectLight.shadow.camera.zoom = 0.3; // default
 
-    scene.add(AntiDirectLight);
+    scene.add(AntiDirectLight); */
 
     const light = new THREE.AmbientLight(0xFFFFFF, 0.3);
     scene.add(light)
@@ -133,6 +140,7 @@ async function init(params) {
     await new Promise(resolve => setTimeout(resolve, 3000));
     document.getElementById("bg").style.transition = "0s";
 
+    MusicFade.play();
     prepareLevel();
 }
 
@@ -142,13 +150,7 @@ async function prepareLevel(){
     //set player to start position
     p.position.set(level.start[0],level.start[1] + 1,level.start[2]);
     previewPoints = level.previewPoints;
-    previewCurr.x = previewPoints[0].x;
-    previewCurr.y = previewPoints[0].y;
-    previewCurr.x -= camera.position.x -5;
-    previewCurr.y -= camera.position.z -5;
-    previewCurr.normalize();
-    previewCurr.multiplyScalar(4);
-    previewPoints.push(new THREE.Vector2(camera.x, camera.z));
+    previewPoints.push(new THREE.Vector3(camera.position.x,camera.position.y,camera.position.z));
     preview = true;
     document.getElementById("levelCounter").innerHTML = levelCount + "/" + levelLast;
     level.init();
@@ -168,32 +170,29 @@ async function afterPrrview(){
     preview = false;
 }
 
-function render () {
+function render() {
     deltaTime = clock.getDelta();
-    if(preview){
-        //console.log(previewPoints[0]);
-        if(((previewPoints[0].x + 5 * previewCurr.x / Math.abs(previewCurr.x)) - camera.position.x * previewCurr.x / Math.abs(previewCurr.x)) < 0 || ((previewPoints[0].y + 5 * previewCurr.y / Math.abs(previewCurr.y)) - camera.position.z * previewCurr.y / Math.abs(previewCurr.y)) < 0){
+    if(preview){    
+        if(previewPoints[0].distanceTo(camera.position) < 1){
             previewPoints.shift();
             if(previewPoints.length == 0){
                 afterPrrview();
                 requestAnimationFrame( render );
                 return;
             } 
-        
-            previewCurr.x = previewPoints[0].x;
-            previewCurr.y = previewPoints[0].y;
-
-            previewCurr.x -= camera.position.x - 5;
-            previewCurr.y -= camera.position.z - 5;
-            previewCurr.normalize();
-            previewCurr.multiplyScalar(4);
             requestAnimationFrame( render );
             return;
         }
+        /* console.log("Scene polycount:", renderer.info.render.triangles)
+        console.log("Active Drawcalls:", renderer.info.render.calls)
+        console.log("Textures in Memory", renderer.info.memory.textures)
+        console.log("Geometries in Memory", renderer.info.memory.geometries) */
 
-        distance_left = distance(camera.position.x - 5, camera.position.z - 5, previewPoints[0].x, previewPoints[0].y) + 3;
-        camera.position.x += previewCurr.x * distance_left * 0.15 * deltaTime;
-        camera.position.z += previewCurr.y * deltaTime * distance_left * 0.15; 
+    
+        camera.position.lerp(previewPoints[0], deltaTime)
+    } else{
+        camerapoint.set(p.position.x + 5, p.position.y + 5, p.position.z + 5)
+        camera.position.lerp(camerapoint, deltaTime * 9);
     }
     p.move(deltaTime);
     camera.updateProjectionMatrix();

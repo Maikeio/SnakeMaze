@@ -52,6 +52,12 @@
         "type":"HalfBlock"
     },
     {
-        "previewPoint":[1,0,4]
+        "previewPoint":[3,7,4]
+    },
+    {
+        "previewPoint":[11,7,6]
+    },
+    {
+        "previewPoint":[7,7,13]
     }
 ]
