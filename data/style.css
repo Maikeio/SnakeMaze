@@ -46,6 +46,18 @@ height: 100%;
     background-color: transparent;
     border: none;
 }
+
+#play{
+    width: 3cm;
+    height: 3cm;
+    float: right;
+    margin: 2cm;
+    position: relative;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
 #levelCounter{
     width: 5cm;
     margin: 0.5cm;

@@ -36,9 +36,6 @@ var deltaTime;
 
 var previewPoints;
 
-var MusicFade;
-var MusicLoop;
-
 var preview;
 
 var renderer = new THREE.WebGLRenderer({
@@ -48,10 +45,11 @@ var renderer = new THREE.WebGLRenderer({
 
 let distance_left;
 
+var MusicFade = new Audio("Schlangentempel_fade-in.mp3");
 
-async function init(params) {
-     
-    MusicFade = new Audio("Schlangentempel Fade-In.wav");
+var MusicLoop = new Audio("Schlangentempel_loop.mp3");
+
+async function init() {
 
     scene = new THREE.Scene(); 
 
@@ -220,6 +218,13 @@ document.getElementById('reload_button').addEventListener("click",function(eve){
     p.position.set(level.start[0],level.start[1] + 1,level.start[2]);
 });
 
+document.getElementById('play').onclick = (eve)=>{init()};
+
+MusicFade.onended = (eve)=>{
+    MusicLoop.loop = true;
+    MusicLoop.play()
+}
+
 document.querySelector('#main').addEventListener("touchstart", function(eve){
     if(p.moving == "false" && !LockMove){
         let touchobj = eve.changedTouches[0]; // erster Finger
@@ -292,6 +297,5 @@ document.querySelector('#main').addEventListener("touchmove", function(eve){
     
  });
 
-init();
  
      

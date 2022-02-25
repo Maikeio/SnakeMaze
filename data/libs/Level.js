@@ -56,9 +56,6 @@ class Level extends THREE.Group{
             }
             //this.MapTiles.get("objects").get("Sand")[0].count = 5;
         });
-        for(let i of this.children){
-            console.log(i.instanceMatrix.array);
-        }
         
     }
 
