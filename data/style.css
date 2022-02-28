@@ -5,24 +5,26 @@ body {
 }
   
 canvas {
-position: fixed;
-top: 0;
-left: 0;
-transition: 1.5s;
-opacity: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: 1.5s;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
 }
 
-canvas { width: 100%; height: 100% }
-
 main {
-    position: relative;
-width: 100%;
-color: white;
-position: absolute;
-width: 100%;
-text-align: center;
-font-size: 0.8cm;
-height: 100%;
+    position: fixed;
+    width: 100%;
+    color: white;
+    position: absolute;
+    height: 100%;
+    text-align: center;
+    font-size: 0.8cm;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
 .gameUI{
@@ -40,20 +42,28 @@ height: 100%;
 #reload_button{
     width: 3cm;
     height: 3cm;
-    float: right;
+    top:0;
+    right: 0;
     margin: 0.5cm;
-    position: relative;
+    position: absolute;
     background-color: transparent;
     border: none;
 }
 
-#play{
+#play_div{
     width: 3cm;
     height: 3cm;
-    float: right;
-    margin: 2cm;
+    margin: auto;
     position: relative;
-    background-color: transparent;
+    border: none;
+    margin-top: 40%;
+}
+
+#play_but{
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    background-color: #4596AD;
     border: none;
     color: white;
 }

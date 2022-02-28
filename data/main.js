@@ -1,4 +1,3 @@
-document.getElementById("test").innerHTML = "lädt...";
 import * as THREE from '/libs/three.module.js'; 
 import {Player} from '/libs/Player.js'
 import { LevelObjects, Level } from './libs/Level.js';
@@ -113,7 +112,7 @@ async function init() {
     DirectLight.shadow.mapSize.width = 512; // default
     DirectLight.shadow.mapSize.height = 512
     DirectLight.shadow.radius = 3;
-    scene.add(DirectLight)
+    scene.add(DirectLight);
 
     //add light from opposit side, so normals don't show of by only one side
     /* const AntiDirectLight = new THREE.DirectionalLight(0xFFFFFF, 0.1);
@@ -123,7 +122,7 @@ async function init() {
     scene.add(AntiDirectLight); */
 
     const light = new THREE.AmbientLight(0xFFFFFF, 0.3);
-    scene.add(light)
+    scene.add(light);
 
 
     //transition from loading to game
@@ -218,7 +217,11 @@ document.getElementById('reload_button').addEventListener("click",function(eve){
     p.position.set(level.start[0],level.start[1] + 1,level.start[2]);
 });
 
-document.getElementById('play').onclick = (eve)=>{init()};
+document.getElementById('play_but').onclick = (eve)=>{
+    eve.target.childNodes[0].remove();
+    eve.target.remove();
+    init()
+};
 
 MusicFade.onended = (eve)=>{
     MusicLoop.loop = true;
