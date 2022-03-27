@@ -12,8 +12,8 @@ var p;
 
 var level;
 
-var levelCount = 4;
-var levelLast = 4;
+var levelCount = 5;
+var levelLast = 5;
 
 var startx;
 var starty;

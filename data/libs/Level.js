@@ -125,6 +125,25 @@ class Level extends THREE.Group{
         });
     }
 
+    invertFacing(facing){
+        switch (facing) {
+            case "north":
+               return "south";
+   
+            case "east":
+               return "west" ;
+   
+            case "south":
+               return "north";
+   
+            case "west":
+               return "east";
+
+            default:
+                return "none";
+         }
+    }
+
     getMapTileType(x,y,z){
         x = parseInt(x);
         y = parseInt(y);
@@ -137,10 +156,34 @@ class Level extends THREE.Group{
             return "Air";
          } else return this.level[x][y][z][1];;
     }
+    getMapTileTypeV(v){
+        let x = parseInt(v.x);
+        let y = parseInt(v.y);
+        let z = parseInt(v.z);
+        if (typeof this.level[x] == 'undefined') {
+            return "Air";
+         } else if (typeof this.level[x][y] == 'undefined') {
+            return "Air";
+         } else if (typeof this.level[x][y][z] == 'undefined') {
+            return "Air";
+         } else return this.level[x][y][z][1];;
+    }
     getMapTileFacing(x,y,z){
         x = parseInt(x);
         y = parseInt(y);
         z = parseInt(z);
+        if (typeof this.level[x] == 'undefined') {
+            return "none";
+         } else if (typeof this.level[x][y] == 'undefined') {
+            return "none";
+         } else if (typeof this.level[x][y][z] == 'undefined') {
+            return "none";
+         } else return this.level[x][y][z][2];;
+    }
+    getMapTileFacingV(v){
+        let x = parseInt(v.x);
+        let y = parseInt(v.y);
+        let z = parseInt(v.z);
         if (typeof this.level[x] == 'undefined') {
             return "none";
          } else if (typeof this.level[x][y] == 'undefined') {
