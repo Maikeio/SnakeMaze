@@ -1,0 +1,31 @@
+{
+  "name": "snakemaze",
+  "version": "1.0.0",
+  "description": "Game for a geocashe and protfolio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/Maikeio/SnakeMaze"
+  },
+  "author": "Amy Retzerau",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mysql": "^2.18.1",
+    "pbkdf2-password": "^1.2.1",
+    "raw-loader": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.0",
+    "@types/mysql": "^2.15.26",
+    "@types/node": "^20.13.0",
+    "nodemon": "^3.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
