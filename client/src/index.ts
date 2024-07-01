@@ -1,26 +1,36 @@
 import * as THREE from 'three';
 import SandMaterial from './SandMaterial';
 import TerrainGeometry from './TerrainGeometry';
+import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer';
+import {OutputPass} from 'three/examples/jsm/postprocessing/OutputPass';
+import DefferedRenderPass from './DefferedRenderPass';
+
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xffffff, 10, 115 );
-scene.background = new THREE.Color(0xa4feff);
+scene.background = new THREE.Color(0x42429a);
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-const renderer = new THREE.WebGLRenderer({antialias: true});
+const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setPixelRatio(window.devicePixelRatio * 1.2);
+renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild( renderer.domElement );
 
 let normal = new THREE.TextureLoader().load("./sand_nor.png")
 let devTex = new THREE.TextureLoader().load("./dev.png")
 
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshStandardMaterial( { color: 0x00ff00, normalMap: normal, opacity:0, transparent: true });
+const geometry = new THREE.BoxGeometry( 500, 500, 500 );
+const material = new SandMaterial( { color: new THREE.Color(0x42429a)});
 const cube = new THREE.Mesh( geometry, material );
+material.side = THREE.BackSide;
+
+const cmoposer = new EffectComposer(renderer);
+cmoposer.addPass(new DefferedRenderPass(scene, camera));
+cmoposer.addPass(new OutputPass());
 
 const buffMaterial = new SandMaterial({
-    normalmap: normal
+    normalmap: normal,
+    color: new THREE.Color(1.0, 0.921, 0.418)
   });
 buffMaterial.side = THREE.BackSide;
 
@@ -43,7 +53,7 @@ scene.add( cube );
 scene.add(light);
 scene.add(new THREE.AmbientLight(0xff55ff));
 
-camera.position.set(0,3,75);
+camera.position.set(0,3,70);
 
 function animate() {
 
@@ -56,7 +66,7 @@ function animate() {
     }
 
     requestAnimationFrame(animate);
-	renderer.render( scene, camera );
+	cmoposer.render();
 }
 
 renderer.render(scene,camera);

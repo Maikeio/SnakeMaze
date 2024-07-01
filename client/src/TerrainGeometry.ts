@@ -37,7 +37,6 @@ export default class TerrainGeometry extends THREE.BufferGeometry{
         }
         
         this.computeVertexNormals();
-        this.computeTangents();
         this.attributes.position.needsUpdate = true;
     }
 
@@ -52,7 +51,7 @@ export default class TerrainGeometry extends THREE.BufferGeometry{
         
         let uvscale = 0.1;
 
-        let mapScale = 1.5;
+        let mapScale = 1.8;
 
         heightImage.onload = ()=>{
             let canvas = document.createElement("canvas");
@@ -62,7 +61,16 @@ export default class TerrainGeometry extends THREE.BufferGeometry{
             ctx.drawImage(heightImage, 0,0);
             this.imgData = ctx.getImageData(0,0, canvas.width, canvas.height).data;
             this.imgWidth = canvas.width;
-            uvs.push(0,0);
+            
+            this.applyHeight();
+            this.computeTangents();
+            this.attributes.position.needsUpdate = true;
+            console.log(this.attributes);
+            this._isLoaded = true;
+            loaded();
+        }
+        super();
+        uvs.push(0,0);
             for(let i = 1; i <= rings; i++){
                 for(let j = 0; j <= 5; j++){
                     let angle = 2 * Math.PI / 6 * j;
@@ -102,11 +110,5 @@ export default class TerrainGeometry extends THREE.BufferGeometry{
             this.setIndex(faces);
             this.drawRange = { start: 0, count: Infinity };
             
-            this.applyHeight();
-            console.log(this.attributes);
-            this._isLoaded = true;
-            loaded();
-        }
-        super();
     }
 }
