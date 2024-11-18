@@ -16,7 +16,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.glsl$/i,
+        test: /\.(glsl|vert|frag)$/i,
         exclude: /node_modules/,
         use: [
           {
