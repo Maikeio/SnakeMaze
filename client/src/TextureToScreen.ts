@@ -11,7 +11,7 @@ export class TextureToScreen{
         this.matieral = new THREE.ShaderMaterial({
             uniforms:{
                 inTexture:{value:texture},
-                ratio:{value:0.5}
+                ratio:{value:1.0}
             },
             fragmentShader: textureToScreen,
             vertexShader: vertexShader

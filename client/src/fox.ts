@@ -155,7 +155,7 @@ export default class Fox{
         let textureToScreen = new TextureToScreen(flamesRenderer.texture);
         this.noise.renderNoise(renderer);
         flamesRenderer.renderFlames(renderer);
-        textureToScreen.render(renderer);
+        //textureToScreen.render(renderer);
 
         //this.noise.dispose();
         (this.fox!.material as FurrMaterial).setFlames(this.texture);

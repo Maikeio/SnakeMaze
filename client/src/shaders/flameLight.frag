@@ -33,11 +33,12 @@ float getFlameTexture(vec2 uv){
 uniform vec3 color;
 
 uniform bool hasNormalMap;
+uniform vec2 uvScale;
 in vec2 varyingUV;
 
 void main() {
 
-    vec2 uv = fract(varyingUV*4.0);
+    vec2 uv = fract(varyingUV*uvScale);
     vec3 normal;
 
     float flameValue = getFlameTexture(uv);

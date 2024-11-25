@@ -13,10 +13,9 @@ export default class FlameLightMaterial extends THREE.RawShaderMaterial{
 
         let uniforms:{ [uniform: string]: THREE.IUniform<any> }[] = [
             { uvOffset: new THREE.Uniform(new THREE.Vector2(0,0))},
+            { uvScale: new THREE.Uniform(new THREE.Vector2(1,1))},
             { color:{value: config.color}},
-            { vertexCount: {value: 0}},
             { viewShadowMatrix: {value: new THREE.Matrix4()}},
-            { projectionShadowMatrix: {value: new THREE.Matrix4()}},
             {time: {value:0}}
         ];
 

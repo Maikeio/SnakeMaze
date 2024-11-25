@@ -24,6 +24,8 @@ import { ClearMaskPass} from 'three/examples/jsm/postprocessing/MaskPass';
 import {ClearPass} from 'three/examples/jsm/postprocessing/ClearPass';
 import {TexturePass} from 'three/examples/jsm/postprocessing/TexturePass';
 import { MaskPass } from './CustomMaskPass';
+import { SingleFlameRenderer } from './SingleFlameRenderer';
+import { FlipBookRenderer } from './FlipBook';
 
 
 const scene = new DeferredScene();
@@ -96,6 +98,7 @@ let floor: TerrainMesh;
 let buffMaterial: undefined | TerrainMaterial = undefined;
 let torusMask: THREE.Mesh;
 let cube: THREE.Mesh;
+let flameMask: THREE.Mesh;
 const fox = new Fox();
 fox.load().then(async (result)=>{
 
@@ -121,7 +124,7 @@ fox.load().then(async (result)=>{
     //floor.scale.set(10,1,10);
     floor.generateTerrain(renderer);
 
-    scene.add( floor );
+    //scene.add( floor );
 
     const cubeGeo = new THREE.PlaneGeometry(1.5,100,100);
     cubeGeo.computeTangents();
@@ -178,6 +181,25 @@ fox.load().then(async (result)=>{
     
         -1,0,-1];
 
+        let colorMix = [
+            0,
+            0.5,
+            1,
+    
+            0,
+            0.5,
+            1,
+    
+            0,
+            0.5,
+            1,
+            
+            0,
+            0.5,
+            1,
+        
+            0.5];
+
     let uvs = [
         0.125,0,
         0,0.25,
@@ -213,11 +235,32 @@ fox.load().then(async (result)=>{
     ];
 
     
+    let perlin = new PerlinNoise(undefined,undefined,undefined,0.2);
+
+
+    let flameRenderer = new SingleFlameRenderer(256,256,perlin.texture,undefined,{
+        flameCount:1,
+        innerFlameCount:10,
+        mainFlameWidth:10,
+        flameHeight:1.2,
+        windStrenght:0.0
+    });
+
+    let flipBook = new FlipBookRenderer((renderer)=>{
+        perlin.renderNoise(renderer);
+
+        perlin.material.uniforms.uvOffset.value.y -= 0.3 * 0.08;
+        
+        flameRenderer.renderFlames(renderer);
+    },6,256);
+
+    flipBook.render(renderer, true);
 
     let geometry = new THREE.BufferGeometry();
 
     geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(points),3));
     geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(uvs),2));
+    geometry.setAttribute("colorMix", new THREE.BufferAttribute(new Float32Array(colorMix),1));
 
     geometry.setIndex(faces);
     geometry.drawRange = { start: 0, count: Infinity };
@@ -225,44 +268,36 @@ fox.load().then(async (result)=>{
     geometry.computeTangents();
 
     let flameMaterial = new FlameLightMaterial({color:new THREE.Color(0xff0000)});
-    flameMaterial.uniforms.flameMap = (fox.fox!.material as FurrMaterial).uniforms.flameMap;
-    lightThing = new THREE.Mesh(geometry, flameMaterial);
+    flameMaterial.uniforms.flameMap.value = (fox.fox!.material as FurrMaterial).uniforms.flameMap.value;
+    (flameMaterial.uniforms.uvScale.value as THREE.Vector2).set(4,4);
+    lightThing = new THREE.Mesh(geometry,flameMaterial);
     (lightThing.material as DeferredMaterial).side = THREE.BackSide;
-    lightThing.position.y = 3;
+    //(lightThing.material as DeferredMaterial).transparent = true;
 
-    let flameMaksPlane = new THREE.PlaneGeometry(2,4);
-    let maskMaterial  = new FlameLightMaterial({color:new THREE.Color(0xffffff)});
-    maskMaterial.uniforms.flameMap = (fox.fox!.material as FurrMaterial).uniforms.flameMap;
+    
+
+    let flameMaksPlane= [new THREE.PlaneGeometry(4,4),new THREE.PlaneGeometry(4,4)];
+    flameMaksPlane[1].rotateY(Math.PI*0.5);
+    
+    let maskMaterial  = new FlameLightMaterial({color:new THREE.Color(0xff0000)});
+    maskMaterial.uniforms.flameMap.value = flipBook.texture;
+    //maskMaterial.uniforms.flameMap = (fox.fox!.material as FurrMaterial).uniforms.flameMap;
     maskMaterial.side = THREE.DoubleSide;
-    let flameMask = new THREE.Mesh(flameMaksPlane,maskMaterial);
+    flameMask = new THREE.Mesh(mergeGeometries(flameMaksPlane),maskMaterial);
     flameMask.position.y = 1;
-    forScene.add(flameMask);
+    maskScene.add(flameMask);
 
     //let torusMask = new THREE.Mesh( new THREE.TorusGeometry( 3, 1, 16, 32 ) );
     torusMask = new THREE.Mesh(new THREE.BoxGeometry(2,2,2));
     torusMask.position.z = -5;
-    maskScene.add(torusMask);
+    //maskScene.add(torusMask);
 
     forScene.add(lightThing);
 
-    let perlin = new PerlinNoise(undefined,undefined,undefined,0.2);
-    perlin.renderNoise(renderer);
-
-    let flameRenderer = new FlameRenderer(256,256,perlin.texture,undefined,{
-        flameCount:1,
-        innerFlameCount:10,
-        mainFlameWidth:10,
-        flameHeight:1.2,
-        windStrenght:0.0
-    });
-    flameRenderer.renderFlames(renderer);
-
-    //let toScreen = new TextureToScreen(flameRenderer.texture);
-   // toScreen.render(renderer);    
 
     clock.start();
 
-    onWindowResize();
+    //onWindowResize();
     animate();
 });
 const lights: [THREE.PointLight, THREE.Vector3][] = [];
@@ -370,6 +405,8 @@ document.addEventListener("mousemove",(ev: MouseEvent)=>{
     cameraAnker.rotation.y = - angle;
 });
 */
+
+
 function animate() {
 
     let deltaTime = clock.getDelta();
@@ -384,6 +421,14 @@ function animate() {
         buffMaterial!.uniforms.uvOffset.value.y -= 0.3;
         //bufferGeometry.applyHeight();
     }*/
+    requestAnimationFrame(animate);
+
+    
+
+
+    stats.update();
+
+   
     floor.offset.y -= worldMove;
 
     torusMask.rotation.y += deltaTime;
@@ -391,15 +436,15 @@ function animate() {
     updateLights(worldMove);
 
     renderer.clear();
-    requestAnimationFrame(animate);
 	composer.render();
-    stats.update();
     if (fox.animationMixer){
         fox.animationMixer.update(deltaTime);
         //fox.fox!.rotation.y += 0.01;
         //(cube as THREE.Mesh).rotation.y += 0.01;
         (fox.fox!.material as THREE.ShaderMaterial).uniforms.time.value += 400*deltaTime;
-        (lightThing.material as THREE.ShaderMaterial).uniforms.time.value += 400*deltaTime;
+        (lightThing.material as FlameLightMaterial).uniforms.time.value += 400*deltaTime;
+        (flameMask.material as FlameLightMaterial).uniforms.time.value += 400*deltaTime;
+        flameMask.rotation.y += worldMove * 0.01;
     }
     fox.updatePos(floor,lights, deltaTime);
     
