@@ -37,7 +37,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Snake Maze',
+      title: 'SnakeMaze',
       template: './src/index.html'
     })
   ],

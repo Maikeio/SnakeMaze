@@ -2,8 +2,6 @@
 varying vec2 vUv;
 uniform vec2 uvOffset;
 uniform sampler2D noise;
-#define FLAMECOUNT 4.0
-#define INNERFLAMECOUNT 4.0
 
 float random (vec2 st) {
     return fract(sin(dot(st.xy,

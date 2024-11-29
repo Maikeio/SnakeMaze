@@ -13,7 +13,7 @@ export interface flameConfig{
 
 const defaultFlaemConfig=
 {
-    flameCount:4,
+    flameCount:6,
     innerFlameCount:4,
     mainFlameWidth:1.5,
     flameHeight:1,

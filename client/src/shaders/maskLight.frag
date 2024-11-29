@@ -17,11 +17,8 @@ in vec3 varyibngNormal;
 in vec3 varyibngTangent;
 in vec3 varyibngBinormal;
 
-
-in float varyingColorMix;
-in vec2 screenPos;
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
+in vec3 varyingPosition;
+in vec4 varyingShadowPosition;
 
 float getFlameTexture(vec2 uv){
     float animationFrame = mod(floor(time* (1.0/36.0)),36.0);
@@ -37,7 +34,6 @@ uniform vec3 color;
 
 uniform bool hasNormalMap;
 uniform vec2 uvScale;
-uniform float opacity;
 in vec2 varyingUV;
 
 void main() {
@@ -47,19 +43,11 @@ void main() {
 
     float flameValue = getFlameTexture(uv);
 
-    vec3 color1 = vec3(1.0,0.5,0.901);
+    if(flameValue < 0.2){
+       discard;
+    }
 
-
-    vec4 glNull = projectionMatrix * modelViewMatrix * vec4(0.0,0.0,0.0,1.0);
-    vec2 pos1 = glNull.xy/ glNull.w *0.5 + 0.5;
-
-    float distanceToCenter = distance(pos1, screenPos);
-
-    float mixVal = varyingColorMix*1.2 + (flameValue)*0.7 * (0.4-distance(pos1, screenPos))+distanceToCenter*2.0;
-
-    fragColor = vec4(mix(color1,color,mixVal),opacity);
-
-    //fragColor = vec4(vec3(mix(0.5,1.0,flameValue)),1.0);// vec3(1.0, 0.921, 0.418);
+    fragColor = vec4(vec3(1.0),1.0);// vec3(1.0, 0.921, 0.418);
     //gl_FragColor.a = 1.0;
 
     /*gNormal = vec4( normalize(mat3(varyibngTangent, varyibngBinormal, varyibngNormal) * vec3(0.0, 0.0, 1.0)),1.0) ;

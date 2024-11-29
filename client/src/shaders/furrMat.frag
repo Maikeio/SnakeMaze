@@ -78,7 +78,7 @@ void main() {
     }
 
      gAlbedoSpec.rgb = COLOR ;// vec3(1.0, 0.921, 0.418);
-    gAlbedoSpec.rgb *= (1.0+ vertexLayer*0.4);
+    gAlbedoSpec.rgb *= vertexLayer*0.07;
     /*if((varyingGlow > 0.1 && vertexLayer > 15.0)){
         gAlbedoSpec.rgb = varyingGlowColor;
         gAlbedoSpec.rgb *= flameValue*10.0;

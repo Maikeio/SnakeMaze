@@ -7,6 +7,7 @@ import { PerlinNoise } from './PerlinNoise';
 import { FlameRenderer } from './FlameRenderer';
 import { TextureToScreen } from './TextureToScreen';
 import { TerrainGeometry, TerrainMesh } from './Terrain';
+import FlameLight from './shaders/FlameLight';
 let skelet: THREE.Skeleton;
 
 export default class Fox{
@@ -61,7 +62,7 @@ export default class Fox{
         return gltf.scene;
     }
 
-    updatePos(floor: TerrainMesh, lights: [THREE.PointLight,THREE.Vector3][], deltaTime: number){
+    updatePos(floor: TerrainMesh, lights: [THREE.PointLight,FlameLight][], deltaTime: number){
         if(!this.fox){
             return;
         }
@@ -138,7 +139,7 @@ export default class Fox{
         this.noise.renderNoise(renderer);
         while(renders < (6**2)){
 
-            this.noise.material.uniforms.uvOffset.value.y -= 0.012;
+            this.noise.material.uniforms.uvOffset.value.y -= 0.006;
             flamesRenderer.renderFlames(renderer);
             
             renderer.copyFramebufferToTexture(this.texture!, new THREE.Vector2(-Math.floor(renders/6)*256,-(renders%6)*256));
@@ -158,6 +159,10 @@ export default class Fox{
         //textureToScreen.render(renderer);
 
         //this.noise.dispose();
+    }
+
+    setGeneratedTexture(){
+
         (this.fox!.material as FurrMaterial).setFlames(this.texture);
     }
 }

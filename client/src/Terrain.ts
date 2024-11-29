@@ -207,10 +207,10 @@ export class TerrainMesh extends THREE.Mesh{
         return this.material.uniforms.uvOffset.value;
     }
 
-    constructor(normalMap: THREE.Texture, width = 4096, height = 4096){
+    constructor(width = 4096, height = 4096){
 
 
-        let material = new TerrainMaterial({color: new THREE.Color(1.0, 0.921, 0.418), normalmap:normalMap, poissonDisk: TerrainMesh.genPersisionDisk(width) });
+        let material = new TerrainMaterial({color: new THREE.Color(1.0, 0.921, 0.418), poissonDisk: TerrainMesh.genPersisionDisk(width) });
         let geometry = new TerrainGeometry();
         super(geometry,material);
         this.material = material;
@@ -322,15 +322,18 @@ export class TerrainMaterial extends THREE.RawShaderMaterial{
             defines: defines
         });
         
-        if(config.normalmap){
-            this.uniforms.normalMap.value = config.normalmap;
-        }
         
         this._color = config.color;
     }
 
     get color(){
         return this._color;
+    }
+
+    set normal(texuture: THREE.Texture){
+        this.defines.HAS_NORMALMAP = undefined;
+        this.uniforms.normalMap.value = texuture;
+        this.needsUpdate = true;
     }
 
     set color(color: THREE.ColorRepresentation){

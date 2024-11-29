@@ -101,7 +101,7 @@ void main() {
         }*/
 
         if(pointDistance < pointLights[i].distance){
-            float pointIntensity = 1.0/ pow(pointDistance,2.0);
+            float pointIntensity = 1.0/(pow(pointDistance,2.0)+10.0);
         
             diffContrib += max(dot(-pointLightVec, normal),0.0) * pointIntensity * pointLights[i].color;
 

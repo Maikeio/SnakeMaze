@@ -39,7 +39,7 @@ function init() {
 
     box = new THREE.Mesh( new THREE.BoxGeometry( 4, 4, 4 ) );
     scene1.add( box );
-    box.position.z = -5;
+    box.position.z = -5;//
 
 
     renderer = new THREE.WebGLRenderer();
