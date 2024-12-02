@@ -27,7 +27,7 @@ import { MaskPass } from './CustomMaskPass';
 import { SingleFlameRenderer } from './SingleFlameRenderer';
 import { FlipBookRenderer } from './FlipBook';
 import MaskLightMaterial from './maskLightMaterial';
-import FlameLight, { FlameLoader } from './shaders/FlameLight';
+import FlameLight, { FlameLoader } from './FlameLight';
 
 
 const scene = new DeferredScene();
@@ -232,6 +232,7 @@ function updateLights(worldMove: number, deltaTime:number){
         flamePos.y -= 0.5;
 
         flame.setPosition(flamePos);
+        flame.setScale(light.scale);
 
         (flame.flameVolume.material as FlameLightMaterial).uniforms.opacity.value = light.intensity/20;
 

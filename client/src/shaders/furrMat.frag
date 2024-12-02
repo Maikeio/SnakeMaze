@@ -9,7 +9,7 @@ layout(location = 1) out vec4 gNormal;
 layout(location = 2) out vec4 gPosition;
 layout(location = 3) out vec4 gShadowPosition;
 
-#define SCALE 50.0
+#define SCALE 30.0
 #define FLAMESCALE 0.5
 
 in vec3 varyibngNormal;
@@ -117,7 +117,7 @@ void main() {
     if(flameValue < 0.2 + (vertexLayer-15.0)/7.0){
         discard;
     }
-    if(vertexLayer > 15.0 && varyingGlow < 1.0){
+    if(vertexLayer > 15.0 && varyingGlow < flameValue){
         discard;
     }
     //combine the projected colors

@@ -7,7 +7,7 @@ import { PerlinNoise } from './PerlinNoise';
 import { FlameRenderer } from './FlameRenderer';
 import { TextureToScreen } from './TextureToScreen';
 import { TerrainGeometry, TerrainMesh } from './Terrain';
-import FlameLight from './shaders/FlameLight';
+import FlameLight from './FlameLight';
 let skelet: THREE.Skeleton;
 
 export default class Fox{
@@ -98,14 +98,21 @@ export default class Fox{
 
         if(this.light){
             this.velocity = Math.max(Math.min(this.velocity + Math.sign(this.light!.position.x - this.fox!.position.x)* 0.003, 0.1),-0.1);
-            if(this.light.position.distanceTo(this.fox!.position) < 2){
+            let distToLight = this.light.position.distanceTo(this.fox!.position);
+            if(distToLight < 6){
+                this.light.position.lerp(this.fox!.position,(1/(distToLight)**2)*2.0);
+                this.light.scale.lerp(new THREE.Vector3(),(1/(distToLight)**2)*2.0);
+            }
+            if(distToLight < 2){
                 this.light.position.z = 120;
 
                 (this.fox!.material as FurrMaterial).glowColor = this.light.color;
 
                 (this.fox!.material as FurrMaterial).glowPercantage = 2.0;
+                this.light.scale.set(1,1,1);
                 this.light = undefined;
             }
+            
         } else {
             this.velocity -= Math.sign(this.velocity)*0.001;
         }
@@ -125,8 +132,8 @@ export default class Fox{
 
     genTextures(renderer: THREE.WebGLRenderer){
         
-
-        const flamesRenderer = new FlameRenderer(256,256, this.noise.texture);
+        let rendererConf = {flameCount:4,innerFlameCount:4,mainFlameWidth:1.5,flameHeight:1,windStrenght:0};
+        const flamesRenderer = new FlameRenderer(256,256, this.noise.texture,undefined,rendererConf);
         //this.texture = new THREE.FramebufferTexture(256*6, 256*6);
         this.texture.minFilter = THREE.LinearMipMapLinearFilter;
         this.texture.magFilter = THREE.LinearFilter;

@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { PerlinNoise } from '../PerlinNoise';
-import { SingleFlameRenderer } from '../SingleFlameRenderer';
-import { FlipBookRenderer } from '../FlipBook';
-import { FlameRenderer } from '../FlameRenderer';
-import FlameLightMaterial from '../FlameLightMaterial';
-import MaskLightMaterial from '../maskLightMaterial';
+import { PerlinNoise } from './PerlinNoise';
+import { SingleFlameRenderer } from './SingleFlameRenderer';
+import { FlipBookRenderer } from './FlipBook';
+import { FlameRenderer } from './FlameRenderer';
+import FlameLightMaterial from './FlameLightMaterial';
+import MaskLightMaterial from './maskLightMaterial';
 import {mergeGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export default class FlameLight{
@@ -131,10 +131,16 @@ export default class FlameLight{
         this.planeMask.position.y += FlameLight.heightOffset;
     }
 
+    setScale(target: THREE.Vector3){
+        this.flameVolume.scale.copy(target);
+        this.planeMask.scale.copy(target);
+    }
+
     set animationTime(time:number){
         (this.flameVolume.material as FlameLightMaterial).uniforms.time.value = time;
         (this.planeMask.material as FlameLightMaterial).uniforms.time.value = time;
     }
+
     get animationTime():number{
         return (this.flameVolume.material as FlameLightMaterial).uniforms.time.value;
     }
