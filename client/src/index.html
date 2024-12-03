@@ -4,19 +4,21 @@
 		<meta charset="utf-8">
 		<title>Flame</title>
 		<style>
-			body { margin: 0; color: white; font-family: Helvetica}
+			body { margin: 0; color: white; background-color: black; font-family: Helvetica}
 			#canvasRender {position: fixed;top:0px}
 			#cssRender {position: fixed}
 			#main {
-				height: 2000px;
-				margin: calc(50% - 500px);
-				margin-top: 90vh;
+				margin: auto;
+				width:  80%;
+				margin-top: 85vh;
+				margin-bottom: 40px;
 				background-color: #161616d3;
 				border-radius: 15px;
 				position: relative;
 				backdrop-filter: blur(20px);
-				padding: 30px;
-				padding-inline: calc(50% - 450px);
+				padding: 40px;
+				max-inline-size: 800px;
+				inline-size: 80%;
 				text-align:justify;
 			}
 			h1{
@@ -24,6 +26,25 @@
 			}
 			h2{
 				margin-top: 40px;
+			}
+			/* unvisited link */
+			a:link {
+				color: rgb(243, 190, 253);
+			}
+
+			/* visited link */
+			a:visited {
+				color: rgb(198, 144, 209);
+			}
+
+			/* mouse over link */
+			a:hover {
+				color: rgb(198, 144, 209);
+			}
+
+			/* selected link */
+			a:active {
+				color: rgb(198, 144, 209);
 			}
 		</style>
 	</head>
@@ -36,42 +57,63 @@
 				<a href="https://bsky.app/profile/amyt3a.bsky.social" target="_blank">BlueSky</a>
 			</p>
 			<br>
-			First of all shaders used in this scene a wirtten by myself :D
+			First of all, the shaders used in this scene were written by myself :D
+			I'm pretty happy with the result and <b>I even got mentioned</b> in an
+			<a href="https://simonschreibt.de/gat/pokemon-rapidash/#update2" target="_blank">article</a>
+			at the end. Thx alot to Simon Trümpler &lt3.
 			<br>
-			It follows a summary what drove me to create this project,
-			how I implemented and what ressources I used for the effects.
-			And ofcause what I learned.
 			<br>
-			The effects I'll discribe are:
+			Below you can read what inspired me to do this project,
+			how I did it and what resources I used for the effects. 
+			And of course what I learned.
+			<br>
+			The effects I'm going to describe are:
 
 			<ul>
-				<li>Lighting</li>
+				<li>Lighting model</li>
 				<li>Normal Maps</li>
 				<li>Deferred lighting</li>
 				<li>"Volumetric" Fog</li>
 				<li>Terrain</li>
 				<li>Skinning</li>
 				<li>Shell Texturing</li>
-				<li>Flames on the fox</li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
+				<li>Flames on the fox - triplanar mapping - noise fields</li>
+				<li>Volumetric Flames - Stencilbuffer - uv distortion</li>
 			</ul>
 
 
-			<h2>Lighting</h2>
-			I'm using the good old phong lighting model.
-			On hand I started
+
+			<h2>What was my motivation?</h2>
+			I love the idea of web-based games and services
+			because everyone can try them out without any hassle
+			and the barrier of downloading something is removed. Or is it removed?
+			<br>
+			But unfortunately, good-looking 3D experiences with envoirements are hard to implement.
+			In my previous projects with my former employer,
+			we still tried and used the light mapping approach
+			to implement a demo VR shopping experience.
+			Although this obviously solved the problem of realistic lighting,
+			it had a huge side effect. Due to the size of the resources,
+			the loading times were immense.
+			So a big advantage of choosing the web as a platform was lost.
+			<br>
+			Nevertheless, I personally wanted to get closer to this dream,
+			so I started to explore the possibilities of real-time lighting.
+			That's how I ended up here, exploring ground-up shaders.
+
+
+			
+
+			<h2>Lighting model</h2>
+			I'm using the good old phong lighting.
+			On the hand, I started
 			this project with the help of the book "GLSL Essentials" by Jacobo Rodríguez
-			and he did a good job introducing it.
-			On the other hand, because I had no time looking deep enogh
-			into it, to undestand the math fully and I'm not a fan
+			,and he did a good job of introducing it.
+			On the other hand, because I didn't have time to look deep enogh
+			into it, to fully undestand the math and I'm not a fan
 			of copying math functions.
 			<br>
-			I also added some fresnel for stylizing, one ressource was this
+			I also added some fresnel for stylisation, one source was this
 			<a href="https://lettier.github.io/3d-game-shaders-for-beginners/fresnel-factor.html" target="_blank">article</a>
 			by David Lettier.
 			<br>
@@ -79,85 +121,112 @@
 			<h2>Normal Maps</h2>
 			Something that hit my by suprise and
 			I didn't thought of as a problem.
-			But they were, so I learned about tangent space.
-			Again, I apreciated the help of
+			But it was, so I learned about tangent space.
+			Again I appreciated the help of
 			<a href="https://lettier.github.io/3d-game-shaders-for-beginners/normal-mapping.html" target="_blank">David Lettier</a>.
 			<br>
 
 			<h2>Deferred lighting</h2>
-			One goal, since the start, was the ability to use many lights,
-			so this wouldn't be a problem in athmospharic scenes,
-			so I looked into deferred lighting. I was very pleased to
+			One goal from the start was to be able to use a lot of lights,
+			so that wouldn't be a problem in atmospheric scenes.
+			This was the reason for looking into deferred lighting. I was very happy to
 			find this handy
 			<a href="https://learnopengl.com/Advanced-Lighting/Deferred-Shading" target="_blank">tutorial</a>
 			by Joey de Vries.
 			<br>
 
 			<h2>"Volumetric" Fog</h2>
-			For the ambience a volumetric fog would be very nice,
+			A volumetric fog would be nice for the ambience,
 			but true volumetric fog with shadow cameras and depth
 			testing isn't an option for webgl or so many lights.
-			So I was quiet happy when found I
+			So I was quite happy when I found
 			<a href="https://ijdykeman.github.io/graphics/simple_fog_shader" target="_blank" >this</a>
 			simplified solution by Isaac Dykeman.
-			Which in fact was still to expencive to render at full resoultion,
-			so I render it at a lower resolution in an extra pass.
-			I also was able to adapt the math to compensate for an hight limit,
-			so the fog stays down.
+			Rendering at full resolution was still too expensive,
+			so I did an extra pass at a lower resolution.
+			I was also able to adjust the math to compensate for a height
+			limit to keep the fog low.
 
 			<h2>Terrain</h2>
 			It's (obviously) a vertex shader,
-			that displaces the verticis based on a heightmap with scrolling uvs.
-			I blurred it a bit in the distance to reduce flickering and create
+			that displacing the vertices based on a heightmap with scrolling uvs.
+			I blurred it a bit in the distance to reduce flickering and created
 			normals based on the heightmap.
-			The map is generadet with a ractal Brownian Motion and turbulences.
-			About the last part I learned in the awesome
+			The map is generated with a ractal Brownian Motion and turbulence.
+			The last part I learned from the fantastic
 			<a href="https://thebookofshaders.com/13/", target="_blank">The Book of Shaders</a>
 			by Patricio Gonzalez Vivo and Jen Lowe.
 
 
 			<h2>Skinning</h2>
-			A scene without a cute, or what I'm capable of to archive,
-			character wouldn't be half as apealing,
+			A scene without a cute, or whatever I can archive,
+			character wouldn't be half as appealing,
 			but a character needs animation.
-			And with Three.js already bringing support
+			And since Three.js already has support
 			for skinned animations with animation textures,
-			I decided to go down that path with the help of
+			I decided to go down that route with the help of
 			<a href="https://webglfundamentals.org/webgl/lessons/webgl-skinning.html" target="_blank">this article</a>.
 			<br>
 
-			
+			<h2>Shadow mapping</h2>
+			The fox always looked somewhat floating, I thought about using a fake shadow,
+			because setting up shadow cameras for every light wouldn't run at all.
+			But than I thought about just using one orthographic camera for all
+			the lights, and guess what, it works. Thanks to
+			<a href="https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank">this tutorial</a>,
+			the only problem I had to work around,
+			was my deferred lighting setup.
+			I solved this by first applying the shadow camera's projection
+			and view matrix to each fragment of the lighting pass.
+			But I ended up adding another output
+			to the model renderer before the lighting pass,
+			containing the calculated frustum position.
+
 			
 
 			<h2>Shell Texturing</h2>
-			At this point I started to go a step towards visiual effects.
-			To give the Furr at least some depth,
-			I use shell texturing. The inspiration for this effect
-			I got by a YouTube 
-			<a href="https://www.youtube.com/watch?v=9dr-tRQzij4" target="_blank"> Video by Acerola</a>.
+			At this point I started to take a step towards visual effects.
+			To give the furr at least some depth,
+			I used shell texturing. The inspiration for this effect
+			came from a YouTube 
+			<a href="https://www.youtube.com/watch?v=9dr-tRQzij4" target="_blank">Video by Acerola</a>.
 			
 
-			<h2>Flames on the fox</h2>
-			Because of my started interest in vfx a read some articles about the topic,
-			including
 
-			<h2>What was my motivation?</h2>
-			I love the idea of web based games and services,
-			because everybody can try them without hassle
-			and the hurdle to download something is removed. Or is it?
-			<br>
-			But sadly good looking 3d experinces with envoirements are hard to implement.
-			In my privous projects with my former employer we tried non the less and took the approache of
-			lightmapping to implement a demo VR shopping experience.
-			Even tho this obviously solved the realistic lighting problem,
-			it brought a huge side effect. Because of the size of the ressources
-			you had immense loading times.
-			So one big benefit of choosing web as a platform fell down.
-			<br>
-			Never the less, I personally wanted to get closer to this dream,
-			so I looked deeper into the possibilitys of realtime lighting.
-			From reading break downs of some modern games running on lower
-			performance hardware, it seems, that on of the factors for 
+			<h2>Flames on the fox - triplanar mapping - noise fields</h2>
+			Because of my growing interest in vfx, I read a few articles on the subject,
+			including
+			<a href="https://simonschreibt.de/gat/divine-fire/" target="_blank">The Divine Fire</a>
+			by Simon Trümpler. It covered the use of triplanar mapping to texture
+			something for vfx without using a secound uv map.
+			Now I knew how to map something, but had no texture to map.
+			Luckily I read
+			<a href="https://sighack.com/post/getting-creative-with-perlin-noise-fields" target="_blank">this article</a>
+			about noise fields and how to create generative art.
+			So I got my inspiration for these flames.
+			But rendering them in reatime was impossible,
+			so rendering them into a flipbook was the solution.
+
+
+
+
+			<h2>Volumetric Flames - Stencilbuffer - uv distortion</h2>
+			Another VFX trick from Simon Trümpler! In his article
+			<a href="https://simonschreibt.de/gat/pokemon-rapidash/" target="_blank">Pokémon – Rapidash</a>,
+			he explains how to combine a simple volume with a stencil
+			to create a neat flame.
+			For the volume I used the flame texture of the fox,
+			but I had no nice single flame shilloute.
+			Guess what, this problem was solved by yet another article
+			by Simon Trümpler. Specifically, his 
+			<a href="https://simonschreibt.de/gat/stylized-vfx-in-rime/" target="_blank">talk at the ADDON Conference</a>,
+			where he describes how to create a flame with some uv distortion based on noise.
+			Combining the two, I created 
+			<a href="https://madeio.net/flame/" target="_blank">this</a>
+			lovely flame.
+			
+
+
 		</div>
     </body>
 </html>
